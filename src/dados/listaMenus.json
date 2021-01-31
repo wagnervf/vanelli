@@ -1,0 +1,166 @@
+[
+  {
+    "id": 1,
+    "name": "imoveis",
+    "label": "Imóveis",
+    "icon": "house",
+    "novo": "novo-imovel",
+    "to": "/imoveis",
+    "children": {
+      "1.1": {
+        "name": "casa",
+        "label": "Casa",
+        "description": "Casas e Apartamentos",
+        "icon": "house",
+        "to": "/imoveis/novo"
+      },
+      "1.2": {
+        "name": "apartamento",
+        "label": "Apartamento",
+        "description": "Casas e Apartamentos",
+        "icon": "house",
+        "to": "/imoveis/novo"
+      },
+      "1.3": {
+        "name": "terreno",
+        "label": "Terreno",
+        "description": "Terreno, sítios e fazendas",
+        "icon": "house",
+        "to": "/imoveis/novo"
+      },
+      "1.4": {
+        "name": "comercio",
+        "label": "Comércio",
+        "description": "Casas e Apartamentos",
+        "icon": "house",
+        "to": "/imoveis/novo"
+      }
+    }
+  },
+  {
+    "id": 2,
+    "name": "auto-pecas",
+    "label": "Auto Peças",
+    "icon": "directions_car",
+    "to": "/auto-pecas",
+    "children": {
+      "name": "venda",
+      "label": "Vender",
+      "description": "Casas e Apartamentos",
+      "icon": "house",
+      "to": "/imoveis/novo"
+    }
+  },
+  {
+    "id": 3,
+    "name": "esportes",
+    "label": "Esportes",
+    "icon": "sports_handball",
+    "to": "/esportes",
+    "children": {
+      "name": "venda",
+      "label": "Vender",
+      "description": "Casas e Apartamentos",
+      "icon": "house",
+      "to": "/imoveis/novo"
+    }
+  },
+  {
+    "id": 4,
+    "name": "servicos",
+    "label": "Serviços",
+    "icon": "handyman",
+    "to": "/index",
+    "children": {
+      "name": "venda",
+      "label": "Vender",
+      "description": "Casas e Apartamentos",
+      "icon": "house",
+      "to": "/imoveis/novo"
+    }
+  },
+  {
+    "id": 5,
+    "name": "para-casa",
+    "label": "Para Casa",
+    "icon": "local_laundry_service",
+    "to": "/index",
+    "children": {
+      "name": "venda",
+      "label": "Vender",
+      "description": "Casas e Apartamentos",
+      "icon": "house",
+      "to": "/imoveis/novo"
+    }
+  },
+  {
+    "id": 6,
+    "name": "infantil",
+    "label": "Artigo Infantis",
+    "icon": "child_friendly",
+    "to": "/index",
+    "children": {
+      "name": "venda",
+      "label": "Vender",
+      "description": "Casas e Apartamentos",
+      "icon": "house",
+      "to": "/imoveis/novo"
+    }
+  },
+  {
+    "id": 7,
+    "name": "pets",
+    "label": "Pets",
+    "icon": "pets",
+    "to": "/index",
+    "children": {
+      "name": "venda",
+      "label": "Vender",
+      "description": "Casas e Apartamentos",
+      "icon": "house",
+      "to": "/imoveis/novo"
+    }
+  },
+  {
+    "id": 8,
+    "name": "eletronicos",
+    "label": "Eletrônicos",
+    "icon": "phonelink_ring",
+    "to": "/index",
+    "children": {
+      "name": "venda",
+      "label": "Vender",
+      "description": "Casas e Apartamentos",
+      "icon": "house",
+      "to": "/imoveis/novo"
+    }
+  },
+  {
+    "id": 9,
+    "name": "fitness",
+    "label": "Fitness",
+    "icon": "fitness_center",
+    "to": "/index",
+    "children": {
+      "name": "venda",
+      "label": "Vender",
+      "description": "Casas e Apartamentos",
+      "icon": "house",
+      "to": "/imoveis/novo"
+    }
+  },
+  {
+    "id": 10,
+    "name": "musica",
+    "label": "Música",
+    "icon": "music_note",
+    "to": "/index",
+    "children": {
+      "name": "venda",
+      "label": "Vender",
+      "description": "Casas e Apartamentos",
+      "icon": "house",
+      "to": "/imoveis/novo"
+    }
+  }
+]

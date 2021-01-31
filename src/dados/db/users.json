@@ -1,0 +1,28 @@
+{
+  "users": {
+    "ikmAw1UQGFRqPhKv5ISBTd3kWV52": {
+      "name": "User",
+      "email": "user@gmail.com",
+      "created": "2019/03/12",
+      "update": "2019/03/12",
+      "permission": "ADMIN",
+      "active": "true"
+    },
+    "0TiIWbsyXYXNPJeQMlAZ7dWiJeW2": {
+      "name": "Vanelli",
+      "email": "vanelli@teste.com",
+      "created": "2019/05/12",
+      "update": "2019/05/12",
+      "permission": "PUBLIC",
+      "active": "true"
+    },
+    "BcT3RBp8WRSqVLlGqUts8DSUV9n2": {
+      "name": "Wagner",
+      "email": "wagner@gmail.com",
+      "created": "2019/08/12",
+      "update": "2019/08/12",
+      "permission": "COMERCIAL",
+      "active": "false"
+    }
+  }
+}

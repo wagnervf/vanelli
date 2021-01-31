@@ -1,0 +1,50 @@
+{
+  "name": "vanelli",
+  "version": "0.0.1",
+  "description": "Espaço Vanelli ",
+  "productName": "Quasar App",
+  "author": "Wagner Freiria <wagner.freiria@ufms.br>",
+  "private": true,
+  "scripts": {
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "dependencies": {
+    "@quasar/cli": "^1.1.2",
+    "@quasar/extras": "^1.9.10",
+    "@vue/composition-api": "^0.6.4",
+    "axios": "^0.21.1",
+    "core-js": "^3.6.5",
+    "firebase": "^7.24.0",
+    "gulp-sass": "^4.1.0",
+    "quasar": "^1.14.3",
+    "smoothscroll-polyfill": "^0.4.4",
+    "to": "^0.2.9",
+    "update": "^0.7.4",
+    "vue-i18n": "^8.22.1"
+  },
+  "devDependencies": {
+    "@quasar/app": "^2.1.6",
+    "@types/node": "^10.17.15",
+    "node-sass": "^4.13.0",
+    "sass-loader": "^8.0.0",
+    "vue-cli-plugin-quasar": "~3.0.1",
+    "webpack-cli": "^4.1.0",
+    "workbox-webpack-plugin": "^5.1.4"
+  },
+  "browserslist": [
+    "last 10 Chrome versions",
+    "last 10 Firefox versions",
+    "last 4 Edge versions",
+    "last 7 Safari versions",
+    "last 8 Android versions",
+    "last 8 ChromeAndroid versions",
+    "last 8 FirefoxAndroid versions",
+    "last 10 iOS versions",
+    "last 5 Opera versions"
+  ],
+  "engines": {
+    "node": ">= 10.18.1",
+    "npm": ">= 6.13.4",
+    "yarn": ">= 1.21.1"
+  }
+}

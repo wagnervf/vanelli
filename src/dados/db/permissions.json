@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "ID1": {
+      "desciption": "PUBLIC",
+      "created": "2019/03/12",
+      "active": "true"
+    },
+    "ID2": {
+      "desciption": "COMERCIAL",
+      "created": "2019/03/12",
+      "active": "true"
+    },
+    "ID99": {
+      "desciption": "ADMIN",
+      "created": "2019/03/12",
+      "active": "true"
+    }
+  }
+}
