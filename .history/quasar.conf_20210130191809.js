@@ -87,7 +87,7 @@ cfg.module.rules.push({
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
       iconSet: 'material-icons', // Quasar icon set
-      lang: 'pt-BR', // Quasar language pack
+      lang: 'pt-br', // Quasar language pack
       config: {},
 
       // Possible values for "importStrategy":

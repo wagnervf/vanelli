@@ -15,13 +15,8 @@
           <div class="text-h5 text-white">Nova Despesa</div>
         </q-card-section>
 
-        <q-card-section class="q-gutter-md">
-          <q-form
-            role="form"
-            v-on:submit.prevent="onSubmit"
-            @reset="onReset"
-            class="q-gutter-md"
-          >
+        <q-card-section>
+          <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
             <q-select
               filled
               v-model="formDespesa.modalidade"
@@ -74,17 +69,14 @@
 
             <q-input
               filled
-              v-model="formDespesa.valor"
-              label="Valor"
-              type="number"
-              mask="#,##"
-              reverse-fill-mask
-              input-class="text-left"
               prefix="R$"
-              class="text-h6"
+              type="number"
+              v-model.number="formDespesa.valor"
+              label="Valor*"
               lazy-rules
-              :rules="[val => (val && val.length > 0) || 'Valor Obrigatório']"
-              clearable
+              :rules="[
+                val => (val !== null && val !== '') || 'Informe o valor'
+              ]"
             />
 
             <q-input
@@ -103,12 +95,7 @@
                 flat
                 class="q-ml-sm"
               />
-              <q-btn
-                label="Salvar"
-                type="submit"
-                @click="onSubmit()"
-                color="primary"
-              />
+              <q-btn label="Salvar" type="submit" color="primary" />
             </div>
           </q-form>
         </q-card-section>
@@ -130,7 +117,7 @@ export default {
       formDespesa: {
         modalidade: "Obra",
         categoria: "Google",
-        valor: "",
+        valor: 1025,
         observacao: "observacao"
       },
 
@@ -149,17 +136,19 @@ export default {
   },
 
   methods: {
-    onSubmit() {
-      console.log(this.formDespesa);
-      this.dialog = false;
+    onSubmit(evt) {
+      const formData = new FormData(evt.target)
+      console.log(formData);
 
-      // this.$q.notify({
-      //   color: "green-4",
-      //   textColor: "white",
-      //   icon: "cloud_done",
-      //   message: this.formDespesa
-      //  // message: "Submitted"
-      // });
+     
+      this.$q.notify({
+        color: "green-4",
+        textColor: "white",
+        icon: "cloud_done",
+        message: this.formDespesa
+       // message: "Submitted"
+      });
+     
     },
 
     onReset() {

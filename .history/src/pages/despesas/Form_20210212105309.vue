@@ -76,7 +76,6 @@
               filled
               v-model="formDespesa.valor"
               label="Valor"
-              type="number"
               mask="#,##"
               reverse-fill-mask
               input-class="text-left"
@@ -105,8 +104,8 @@
               />
               <q-btn
                 label="Salvar"
-                type="submit"
                 @click="onSubmit()"
+                type="submit"
                 color="primary"
               />
             </div>
@@ -151,7 +150,6 @@ export default {
   methods: {
     onSubmit() {
       console.log(this.formDespesa);
-      this.dialog = false;
 
       // this.$q.notify({
       //   color: "green-4",

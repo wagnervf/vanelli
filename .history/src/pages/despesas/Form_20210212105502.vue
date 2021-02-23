@@ -106,7 +106,6 @@
               <q-btn
                 label="Salvar"
                 type="submit"
-                @click="onSubmit()"
                 color="primary"
               />
             </div>
@@ -151,7 +150,6 @@ export default {
   methods: {
     onSubmit() {
       console.log(this.formDespesa);
-      this.dialog = false;
 
       // this.$q.notify({
       //   color: "green-4",

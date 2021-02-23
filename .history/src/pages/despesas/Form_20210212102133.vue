@@ -15,13 +15,9 @@
           <div class="text-h5 text-white">Nova Despesa</div>
         </q-card-section>
 
-        <q-card-section class="q-gutter-md">
-          <q-form
-            role="form"
-            v-on:submit.prevent="onSubmit"
-            @reset="onReset"
-            class="q-gutter-md"
-          >
+        <q-card-section>
+          <q-form @submit.prevent="onSubmit" @reset="onReset" class="q-gutter-md">
+
             <q-select
               filled
               v-model="formDespesa.modalidade"
@@ -72,20 +68,37 @@
               </template>
             </q-select>
 
-            <q-input
+            <!-- <q-input
               filled
-              v-model="formDespesa.valor"
-              label="Valor"
-              type="number"
-              mask="#,##"
-              reverse-fill-mask
-              input-class="text-left"
               prefix="R$"
-              class="text-h6"
+              type="number"
+              v-model.number="formDespesa.valor"
+              :decimals="2"
+              numeric-keyboard-toggle
+              label="Valor*"
               lazy-rules
-              :rules="[val => (val && val.length > 0) || 'Valor Obrigatório']"
-              clearable
-            />
+              :rules="[
+                val => (val !== null && val !== '') || 'Informe o valor'
+              ]"
+            /> -->
+            <input
+              outlined
+              v-model.number="formDespesa.valor"
+              type="number" 
+              min="1"
+               max="10"
+             
+              
+              class="text-h6"
+              label="Informe o valor"
+             
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) || 'Ops! O Valor é obrigatório',
+              ]"
+            >
+            </input>
 
             <q-input
               filled
@@ -103,12 +116,7 @@
                 flat
                 class="q-ml-sm"
               />
-              <q-btn
-                label="Salvar"
-                type="submit"
-                @click="onSubmit()"
-                color="primary"
-              />
+              <q-btn label="Salvar" type="submit" color="primary" />
             </div>
           </q-form>
         </q-card-section>
@@ -149,17 +157,19 @@ export default {
   },
 
   methods: {
-    onSubmit() {
-      console.log(this.formDespesa);
-      this.dialog = false;
+    onSubmit(evt) {
+      const formData = new FormData(evt.target)
+      console.log(formData);
 
-      // this.$q.notify({
-      //   color: "green-4",
-      //   textColor: "white",
-      //   icon: "cloud_done",
-      //   message: this.formDespesa
-      //  // message: "Submitted"
-      // });
+     
+      this.$q.notify({
+        color: "green-4",
+        textColor: "white",
+        icon: "cloud_done",
+        message: this.formDespesa
+       // message: "Submitted"
+      });
+     
     },
 
     onReset() {

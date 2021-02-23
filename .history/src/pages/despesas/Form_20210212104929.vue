@@ -16,12 +16,8 @@
         </q-card-section>
 
         <q-card-section class="q-gutter-md">
-          <q-form
-            role="form"
-            v-on:submit.prevent="onSubmit"
-            @reset="onReset"
-            class="q-gutter-md"
-          >
+         <q-form role="form" v-on:submit.prevent="onSubmit" @reset="onReset" class="q-gutter-md">
+
             <q-select
               filled
               v-model="formDespesa.modalidade"
@@ -72,20 +68,18 @@
               </template>
             </q-select>
 
-            <q-input
-              filled
-              v-model="formDespesa.valor"
-              label="Valor"
-              type="number"
-              mask="#,##"
-              reverse-fill-mask
-              input-class="text-left"
-              prefix="R$"
-              class="text-h6"
-              lazy-rules
-              :rules="[val => (val && val.length > 0) || 'Valor Obrigatório']"
-              clearable
-            />
+           <q-input
+           filled
+          v-model="formDespesa.valor"
+          label="Price with 2 decimals"
+          mask="#.##"
+          fill-mask="#"
+          reverse-fill-mask
+          hint="Mask: #,00"
+          input-class="text-right"
+              
+            /> 
+            
 
             <q-input
               filled
@@ -103,14 +97,9 @@
                 flat
                 class="q-ml-sm"
               />
-              <q-btn
-                label="Salvar"
-                type="submit"
-                @click="onSubmit()"
-                color="primary"
-              />
+              <q-btn label="Salvar" @click="onSubmit()" type="submit" color="primary" />
             </div>
-          </q-form>
+           </q-form> 
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -150,9 +139,10 @@ export default {
 
   methods: {
     onSubmit() {
-      console.log(this.formDespesa);
-      this.dialog = false;
 
+      console.log(this.formDespesa);
+
+     
       // this.$q.notify({
       //   color: "green-4",
       //   textColor: "white",
@@ -160,6 +150,7 @@ export default {
       //   message: this.formDespesa
       //  // message: "Submitted"
       // });
+     
     },
 
     onReset() {
