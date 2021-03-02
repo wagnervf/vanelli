@@ -1,5 +1,5 @@
-import enUS from './en-us'
+import pt_br from './pt-br'
 
 export default {
-  'en-us': enUS
+  'pt-br': pt_br
 }

@@ -10,7 +10,7 @@
     >
       <q-card class="bg-white">
         <q-card-section class="row bg-red-4 flex">
-          <div class="col text-h5 text-white">Nova Despesa</div>        
+          <div class="col text-h5 text-white">Editar Despesa</div>        
           <div class="col text-right">
             <q-btn
               round
@@ -34,7 +34,7 @@
 
             <q-select
               filled
-              v-model="formDespesa.modalidade"
+              v-model="modalidade"
               transition-show="flip-up"
               transition-hide="flip-down"
               use-input
@@ -59,7 +59,7 @@
 
             <q-select
               filled
-              v-model="formDespesa.categoria"
+              v-model="categoria"
               use-input
               input-debounce="0"
               label="Categoria"
@@ -99,7 +99,7 @@
 
             <q-input
               filled
-              v-model="formDespesa.observacao"
+              v-model="observacao"
               type="textarea"
               label="Observação"
             />
@@ -124,24 +124,6 @@
       </q-card>
     </q-dialog>
 
-    <div class="absolute-bottom text-center">
-      <q-btn
-        round
-        color="red-4"
-        icon="add"
-        @click="dialog = !dialog"
-        class="q-ma-sm"
-      />
-
-      <q-btn
-        round
-        color="indigo"
-        icon="home"
-        @click="getDespesas()"
-        class="q-ma-sm"
-      />
-    </div>
-
 
   </div>
 </template>
@@ -150,21 +132,35 @@ const stringOptions = ["Google", "Facebook", "Twitter", "Apple", "Oracle"];
 import inputDate from "../../components/input_date";
 import { mapActions } from 'vuex'
 export default {
+  props: {  
+  //  dialog: {
+  //    type: Boolean,
+  //    default: false
+  //  },
+
+    dados: {
+      type: Object,
+      default: {}
+    }
+  },
+
+
   components: {
     inputDate,
   },
   data() {
     return {
-      dialog: false,
+     // dialog: false,
       maximizedToggle: true,
 
-      formDespesa: {
+      // formDespesa: {
         data: '',
         modalidade: '',
         categoria: '',
         valor: '',
         observacao: '',
-      },
+      // },
+
       valorDespesa:'',
       model: null,
       stringOptions:'',
@@ -177,7 +173,20 @@ export default {
         "Segurança",
         "Reposição",
       ],
+
+      dialog:false
     };
+  },
+
+  computed:{
+    //janela(){
+      //  get: () => {
+      //  return this.dialog
+      //  },   
+      //  set: (newValue) => {
+      //     return newValue        
+      // }
+    //  }
   },
 
   methods: {
@@ -185,9 +194,9 @@ export default {
 
 
     onSubmit() {
-      console.log(this.formDespesa);
+    
       
-      this.addTask(this.formDespesa)
+     // this.addTask(this.formDespesa)
       this.onReset()
      // this.dialog = true
 
@@ -205,10 +214,9 @@ export default {
     },
 
     setData(value) {
-      this.formDespesa.data = value;
+      this.data = value;
     },
     onReset() {
-      this.formDespesa = [];
       this.valorDespesa = ''
       
      
@@ -236,7 +244,22 @@ export default {
       // console.log(typeof(value))
       // console.log(parseFloat(value))
       // console.log(Number(value))
-      this.formDespesa.valor = Number(value)
+      this.valor = Number(value)
+    },
+
+    dados(value){
+      console.log(value)
+      this.data = value.desp_data
+      this.categoria = value.cat_descricao
+      this.modalidade = value.desp_descricao
+      this.valorDespesa = value.desp_valor
+      this.observacao = value.desp_observacao
+
+      this.dialog =true
+    },
+
+    janela(value){
+      console.log(value)
     }
   }
 };

@@ -1,0 +1,72 @@
+{
+  "ev_db": {
+    "USERS": {
+      "UID1": {
+        "name": "User",
+        "email": "user@gmail.com",
+        "created": "2019/03/12",
+        "update": "2019/03/12",
+        "active": true,
+        "admin": false
+      },
+      "UID2": {
+        "name": "Vanelli",
+        "email": "vanelli@teste.com",
+        "created": "2019/05/12",
+        "update": "2019/05/12",
+        "active": true,
+        "admin": true
+      }
+    },
+    "DESPESAS_USER_CATEGORIA": {
+      "CAT10": {
+        "cat_descricao": "CONSTRUÇÃO",
+        "desp_data": "2020/03/12",
+        "desp_descricao": "Compra de Cimentos",
+        "desp_valor": 1423,
+        "desp_observacao": "Cimento para o Muro",
+        "active": true,
+        "UID1": {
+          "name": "User",
+          "email": "user@gmail.com",
+          "created": "2019/03/12",
+          "update": "2019/03/12",
+          "active": true,
+          "admin": false
+        }
+      },
+      "CAT15": {
+        "cat_descricao": "PROJETO",
+        "desp_data": "2020/01/20",
+        "desp_descricao": "TOPOGRAFIA",
+        "desp_valor": 550,
+        "desp_observacao": "Contratatção Topógrafo",
+        "active": true,
+        "UID2": {
+          "name": "Vanelli",
+          "email": "vanelli@teste.com",
+          "created": "2019/05/12",
+          "update": "2019/05/12",
+          "active": true,
+          "admin": true
+        }
+      },
+      "CAT16": {
+        "cat_descricao": "PROJETO",
+        "desp_data": "2020/10/04",
+        "desp_descricao": "PLANTA",
+        "desp_valor": 4123,
+        "desp_observacao": "Criação Planta Baixa",
+        "active": true,
+        "UID1": {
+          "name": "User",
+          "email": "user@gmail.com",
+          "created": "2019/03/12",
+          "update": "2019/03/12",
+          "active": true,
+          "admin": false
+        }
+      }
+    }
+  }
+}

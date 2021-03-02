@@ -19,11 +19,10 @@ module.exports = function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/boot-files
     boot: [
-      //'firebase',
+      'firebase',
       //'router-auth',
       //'composition-api',
       //'axios',
-      
       'i18n',
     ],
 
@@ -68,10 +67,10 @@ module.exports = function (/* ctx */) {
 
       // https://quasar.dev/quasar-cli/handling-webpack
       extendWebpack (cfg) {
-cfg.module.rules.push({
+        cfg.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,
-         // loader: 'eslint-loader',
+          // loader: 'eslint-loader',
           exclude: /node_modules/
         })
       },
@@ -87,8 +86,9 @@ cfg.module.rules.push({
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
       iconSet: 'material-icons', // Quasar icon set
-      lang: 'pt-BR', // Quasar language pack
+      lang: 'pt-br', // Quasar language pack
       config: {},
+      i18n: 'pt-br',
 
       // Possible values for "importStrategy":
       // * 'auto' - (DEFAULT) Auto-import needed Quasar components & directives

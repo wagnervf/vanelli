@@ -2,7 +2,7 @@
 // import * as getters from './getters'
 // import * as mutations from './mutations'
 // import * as actions from './actions'
-//
+import { uid } from 'quasar'
 // export default {
 //   namespaced: true,
 //   state,
@@ -13,43 +13,32 @@
 
 
 import Vue from 'vue'
-// import { firebaseAuth, firebaseDb } from 'boot/firebase'
+import { firebaseAuth, firebaseDb } from 'boot/firebase'
 
 
 const state = {
   //   userDetails: {},
   //   users: {},
-  itensTable: [
-    {
-      despesa: "Piscina",
-      categoria: "piscina",
-      valor: 10
-    },
-    {
-      despesa: "Energia",
-      categoria: "Energia",
-      valor: 100
-    },
-    {
-      despesa: "Água",
-      categoria: "agua",
-      valor: 65
-    },
-    {
-      despesa: "Net",
-      categoria: "net",
-      valor: 145
-    },
-    {
-      despesa: "Gás",
-      categoria: "gaz",
-      valor: 85
-    }
+  listaDespesas: [
+    // {
+    //   id: 1,
+    //   data: "21/10/2021",
+    //   modalidade: "Obra",
+    //   categoria: "Google",
+    //   valor: 2125,
+    //   observacao: "observacao",
+    // }
+
   ]
 
 }
 
 const mutations = {
+  ADD_TASK (state, payload) {
+    //  Vue.set(state.tasks, payload.task)
+
+    state.listaDespesas.push(payload)
+  },
   // // altera o state
   // setUserDetails (state, payload) {
   //   state.userDetails = payload
@@ -70,6 +59,64 @@ const mutations = {
   // }
 }
 const actions = {
+
+  getAllDespesas ({ commit, dispatch }) {
+    //let result = dispatch('getUsersDespesa', "UID1", snap => console.log(snap.val()))
+
+    const despesas = firebaseDb.ref('ev_db/DESPESAS_USER_CATEGORIA');
+    const users = firebaseDb.ref('ev_db/USERS');
+
+    despesas.on('child_added', snap => {
+      // let userRef = users.child(snap.user)
+      // console.log(snap.val().user)
+      //users.child(snap.val().user).once('value', snapshot => {
+      //console.log(snap.val())
+      // let users = snapshot.val();
+
+      let payload = snap.val()
+      //user: users
+
+
+
+
+
+      commit('ADD_TASK', payload)
+      console.log(payload)
+      // })
+
+
+    })
+
+
+
+
+    // despesas.on('child_added', snapshot => {
+
+    //   let despesasValue = snapshot.val()
+    //   let despesasId = snapshot.key
+
+    //   const users = firebaseDb.ref('ev_db/USERS');
+
+    //   let despesaUser = users.on('child_added', despesasValue.user)
+
+    //   let payload = {
+    //     id: despesasId,
+    //     values: despesasValue,
+    //     user: despesaUser
+    //   }
+    //   console.log(payload.values)
+
+    //   // commit('ADD_TASK', payload)
+    //   // chama mutations
+    //   // commit('addUser', {
+    //   //   userId,
+    //   //   userDetails
+    //   // })
+    //})
+
+
+  }
+
   // registerUser ({ }, payload) {
   //   //console.log('payload : ', payload)
   //   firebaseAuth.createUserWithEmailAndPassword(payload.email, payload.password)
@@ -153,21 +200,7 @@ const actions = {
   //   }
   // },
 
-  // firebaseGetUsers ({ commit }) {
-  //   //buscar todos os usuários
-  //   //ref é o id no banco
-  //   //vhil primeiro elemento do banco
-  //   firebaseDb.ref('users').on('child_added', snapshot => {
-  //     //console.log('snapshot: ', snapshot.key)
-  //     let userDetails = snapshot.val()
-  //     let userId = snapshot.key
-  //     //console.log('userDetails: ', userDetails)
-  //     // chama mutations
-  //     commit('addUser', {
-  //       userId,
-  //       userDetails
-  //     })
-  //   })
+
 
   //   firebaseDb.ref('users').on('child_changed', snapshot => {
   //     let userDetails = snapshot.val()
