@@ -1,23 +1,5 @@
 <template>
   <div class="q-mt-sm">
-   
-    <!-- <q-dialog
-      v-model="dialogEdit"
-      fullscreen
-      hide-overlay
-      transition="dialog-bottom-transition"
-    >     
-      <q-card>
-        {{this.editedItem}} -->
-
-        <FormComponent :dados="this.editedItem" :dialog="dialogEdit" />
-<!-- 
-      </q-card>
-    </q-dialog> -->
-    
-
-
-<!-- --------------- -->
     <q-dialog
       v-model="dialogFiltro"
       persistent
@@ -52,37 +34,81 @@
 
     <!-- Get itens do Store -->
     <q-table
-      :data="this.listaDespesas"
+      :data="listaDeDespesas"
       :columns="this.colunas"
       row-key="id"
-      sortBy="data"
       :filter="filter"
-      :pagination="initialPagination"
       separator="vertical"
-      dense
+      :dense="$q.screen.lt.md"
       no-data-label="Nada encontrado no período!"
+      class="q-mx-xs"
+      :loading="loading"
+      :sort-method="customSort"
+      binary-state-sort
+      :pagination="pagination"
+
     >
       <template v-slot:top>
         <div class="fit row q-py-sm text-indigo-10">
           <div class="col"><h6 class="q-ma-none">Janeiro</h6></div>
-            
+
           <div class="col q-ma-sm">
-            <q-input borderless dense v-model="filter" label="Buscar"  v-if="buscar"/>
+            <q-input
+              borderless
+              dense
+              v-model="filter"
+              label="Buscar"
+              v-if="buscar"
+            />
           </div>
 
-          <div class="col" style="display: flex">
-            <q-btn flat class="q-ma-none" icon="search" @click="buscar = !buscar" />
-            <q-btn flat class="q-ma-none" icon="filter_list" @click="dialogFiltro = !dialogFiltro"/>
+          <div class="col" style="display: flex;">
+            <q-btn
+              flat
+              class="q-ma-none"
+              icon="search"
+              @click="buscar = !buscar"
+            />
+            <q-btn
+              flat
+              class="q-ma-none"
+              icon="filter_list"
+              @click="dialogFiltro = !dialogFiltro"
+            />
           </div>
         </div>
       </template>
 
       <template v-slot:body-cell-acao="props">
-        <q-td :props="props">          
-          <div class="my-table-details">
-            
-            <q-btn round size="sm" color="primary" icon="mode" @click="editDespesa(props.row)" />
-            <q-btn round size="sm" color="red-10" icon="delete" @click="deleteDespesa(props.row)"/>
+        <q-td :props="props">
+          <div class="text-grey-8 q-gutter-xs">
+            <q-btn size="12px" flat dense round icon="more_vert">
+              <q-menu transition-show="flip-right" transition-hide="flip-left">
+                <q-list bordered separator>   
+
+                  <q-item v-ripple class="q-px-sm" clickable @click="viewDespesa(props.row)">
+                    <q-item-section avatar style="min-width: auto;">
+                      <q-icon name="visibility" color="teal" />
+                    </q-item-section>
+                    <q-item-section class="q-pr-sm">Visualizar</q-item-section>
+                  </q-item>              
+
+                  <q-item v-ripple class="q-px-sm" clickable @click="editDespesa(props.row)">
+                    <q-item-section avatar style="min-width: auto;">
+                      <q-icon name="mode" color="primary" />
+                    </q-item-section>
+                    <q-item-section class="q-pr-sm">Editar</q-item-section>
+                  </q-item>
+                  
+                  <q-item class="q-px-sm" clickable @click="deleteDespesa(props.row)">
+                    <q-item-section avatar style="min-width: auto;">
+                      <q-icon name="delete" color="red-4" />
+                    </q-item-section>
+                    <q-item-section class="q-pr-sm">Excluir</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </q-btn>
           </div>
         </q-td>
       </template>
@@ -95,7 +121,35 @@
           </q-td>
         </q-tr>
       </template>
+
+           
     </q-table>
+
+    <Form :dados="this.editedItem"  :dialogProp="this.dialogAdd" />
+
+    <Visualizar :dados="this.viewDados"  />
+
+
+    <div class="absolute-bottom text-center">
+      <q-btn
+        round
+        color="red-4"
+        icon="add"
+        @click="adddDespesa()"
+        class="q-ma-sm"
+      />
+
+      <q-btn
+        round
+        color="indigo"
+        icon="home"
+        @click="getDespesas()"
+        class="q-ma-sm"
+      />
+    </div>
+
+    
+
   </div>
 </template>
 
@@ -105,93 +159,148 @@
 
 div.q-table__middle.scroll > table > tbody > tr:nth-child(odd)
   background-color: #eee;
+
+.my-special-class
+  color: #26A69A;
+  text-align: left;
+  padding-left: 4px!important;
+  padding-right: 1px!important;
+
+
 </style>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
 import inputDate from "../../components/input_date";
-import FormComponent from './FormComponent'
+import Form from "./Form";
+//import Edit from "./Edit";
+import Visualizar from "./View";
+import { date } from "quasar";
+import moment from 'moment'
+import mixinUtils from '../../mixins/mixin-utils'
+
 
 export default {
   components: {
     inputDate,
-    FormComponent
+    Form,
+    Visualizar,
   },
+   mixins: [mixinUtils],
 
   data() {
-    return {      
-      date: "",
-      initialPagination: {
-        sortBy: "desc",
-        descending: false,
+    return {
+      pagination: {
+        sortBy: "data",
+        descending: true,
         page: 1,
-        rowsPerPage: 10,
-        // rowsNumber: xx if getting data from a server
+        rowsPerPage: 7,
       },
       filter: "",   
       colunas: [
         {
-          name: "desp_data",
+          name: "data",
           label: "Data",
-          field: "desp_data",
+          field: "data",
           sortable: true,
           align: "left",
-        },
-        {        
-          sortable: true,
-          align: "left",
-          name: "desp_descricao",
-          label: "Descricao",
-          field: "desp_descricao",
+          classes: 'my-special-class',          
+          format: val => `${ moment(val).format('DD/MM/YYYY')}`,
+    
         },
         {
-          name: "cat_descricao",
+          sortable: true,
+          align: "left",
+          name: "descricao",
+          label: "Descricao",
+          field: "descricao",
+        },
+        {
+          name: "categoria",
           align: "center",
           label: "Categoria",
-          field: "cat_descricao",
+          field: "categoria",
           sortable: true,
         },
         {
-          name: "desp_valor",
+          name: "valor",
           label: "Valor",
-          field: "desp_valor",
+          field: "valor",
           sortable: true,
+          align: "center",          
+          format: val => `${ this.formatarReal(val)}`,
+
+          
         },
         {
           name: "acao",
           label: "Ações",
-          
           sortable: false,
         },
-
-
       ],
       searchText: "",
       dialogFiltro: false,
       buscar: false,
 
+      dialogAdd: {},
+
       editedItem: {},
       editedIndex: -1,
-      dialogEdit: false,
 
-      data: '',
-      modalidade: '',
-      categoria: '',
-      valor: '',
-      observacao: '',
+      viewDados: {},
+
+      loading: false,
+     
     };
   },
 
-  mounted() {},
+  beforeMount() {
+
+    this.loading=true
+    setTimeout(() => {
+      this.loading = false,
+      this.getDespesas()
+    }, 1000);
+     
+  }, 
+
 
   methods: {
-    totalDespesas() {
-      let value = 0;
-      this.listaDespesas.forEach((val) => {
-        value = value + val.desp_valor;
-      });
+    ...mapActions('store', ['getAllDespesas', 'addDespesaUserCategoria']),
 
-      return value.toLocaleString("pt-br", { minimumFractionDigits: 2 });
+    getDespesas(){
+      this.getAllDespesas()
+    },
+    
+    adddDespesa(){
+      this.dialogAdd = Object.assign({}, true);
+    },
+
+    viewDespesa(value) {
+      //sempre cria um novo valor e atribui para viewDados que fica escutando (watch) no componente Visualizar
+      this.viewDados = Object.assign({}, value);
+      for (const key in value) {
+        if (value.hasOwnProperty(key)) {
+            const element = value[key];
+          
+            if(element === 'user'){
+              this.viewDados = {
+                user: element,
+                dados: value
+              }
+            }
+        }
+      }  
+    },
+
+    editDespesa(item) {
+      console.log(item)
+      this.editedIndex = this.listaDeDespesas.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+    },
+
+    deleteDespesa(value) {
+      console.log(value);
     },
 
     setDateInicio(value) {
@@ -201,25 +310,62 @@ export default {
       console.log(value);
     },
 
-  editDespesa(item){
-      this.editedIndex = this.listaDespesas.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialogEdit = true;    
-  
+    totalDespesas() {
+      let value = 0;
+      
+      if(typeof this.listaDeDespesas != 'undefined'){
+        this.listaDeDespesas.forEach((val) => {
+          value = value + val.valor;
+       });
+      }
+       //usando mixins
+      return this.formatarReal(value)
     },
 
-    deleteDespesa(value){
-      console.log(value)
+
+    customSort (rows, sortBy, descending) {
+      const data = [ ...rows ]
+      
+      if (sortBy) {
+        data.sort((a, b) => {
+          const x = descending ? b : a
+          const y = descending ? a : b
+        
+          if (sortBy === 'data') {
+           let xa = x[sortBy]
+           let ya = y[sortBy]
+            return xa > ya ? 1 : xa < ya ? -1 : 0
+          }
+          else {
+            // numeric sort
+            return parseFloat(x[sortBy]) - parseFloat(y[sortBy])
+          }
+        })
+      }
+
+      return data
     }
+  
 
   },
 
   computed: {
-    ...mapState("store", ["listaDespesas"]),
+  //  ...mapState("store", ["allDespesas"]),
+    ...mapGetters('store', ['allDespesas']),
+
+    listaDeDespesas(){
+      let dados_obj = this.allDespesas
+      let dados_array = []
+          
+      dados_array.push(Object.values(dados_obj))
+      return dados_array[0]
+    },
+
 
     pagesNumber() {
-      return Math.ceil(this.listaDespesas.length / this.pagination.rowsPerPage);
+      return Math.ceil(this.listaDeDespesas.length / this.pagination.rowsPerPage);
     },
+
   },
 };
 </script>

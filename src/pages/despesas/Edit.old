@@ -22,44 +22,14 @@
           </div>
         </q-card-section>
        
-        <q-card-section class="q-gutter-md">
-            <!-- v-on:submit.prevent="onSubmit" -->
-
-          <q-form
-            role="form"
-            
-            class="q-gutter-md"
+        <q-card-section>
+          <q-form role="form" class="q-gutter-sm"
           >
             <inputDate label="Data" @update="setData($event)" />
-
+            
             <q-select
               filled
-              v-model="modalidade"
-              transition-show="flip-up"
-              transition-hide="flip-down"
-              use-input
-              input-debounce="0"
-              label="Modalidade"
-              :options="modalidades"
-              @filter="filterFn"
-              behavior="menu"
-              clearable
-              :rules="[
-                (val) => (val !== null && val !== '') || 'Informe a Modalidade',
-              ]"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-
-            <q-select
-              filled
-              v-model="categoria"
+              v-model="form.categoria"
               use-input
               input-debounce="0"
               label="Categoria"
@@ -84,6 +54,17 @@
 
             <q-input
               filled
+              v-model="form.descricao"
+              label="Descrição"
+              type="text"
+              reverse-fill-mask
+              input-class="text-left"            
+              lazy-rules
+              :rules="[(val) => (val && val.length > 0) || 'Valor Obrigatório']"
+            />
+
+            <q-input
+              filled
               v-model="valorDespesa"
               label="Valor"
               type="number"
@@ -99,28 +80,31 @@
 
             <q-input
               filled
-              v-model="observacao"
+              v-model="form.observacao"
               type="textarea"
               label="Observação"
             />
 
-            <div class="text-right">
+            <div class="text-right q-mt-md q-gutter-x-sm">
               <q-btn
                 label="Cancelar"
                 type="reset"
-                color="red"
+                color="red-4"
                 v-close-popup
-                flat
                 class="q-ml-sm"
+                outline
               />
               <q-btn
                 label="Salvar"
                 @click="onSubmit()"
-                color="primary"
+                color="teal"
+                outline
               />
             </div>
           </q-form>
         </q-card-section>
+
+        {{this.form}}
       </q-card>
     </q-dialog>
 
@@ -128,23 +112,22 @@
   </div>
 </template>
 <script>
-const stringOptions = ["Google", "Facebook", "Twitter", "Apple", "Oracle"];
+const stringOptions = [
+        "Conta Fixa",
+        "Obra",
+        "Ampliação",
+        "Reforma",
+        "Segurança",
+        "Reposição",];
 import inputDate from "../../components/input_date";
 import { mapActions } from 'vuex'
 export default {
   props: {  
-  //  dialog: {
-  //    type: Boolean,
-  //    default: false
-  //  },
-
     dados: {
       type: Object,
       default: {}
     }
   },
-
-
   components: {
     inputDate,
   },
@@ -152,53 +135,36 @@ export default {
     return {
      // dialog: false,
       maximizedToggle: true,
-
-      // formDespesa: {
+      form: {
+        id:'',
         data: '',
-        modalidade: '',
         categoria: '',
+        descricao: '',
         valor: '',
-        observacao: '',
-      // },
-
+        observacao: ''
+      },
       valorDespesa:'',
       model: null,
       stringOptions:'',
       options: stringOptions,
-      modalidades: [
-        "Conta Fixa",
-        "Obra",
-        "Ampliação",
-        "Reforma",
-        "Segurança",
-        "Reposição",
-      ],
-
+    
       dialog:false
     };
   },
 
   computed:{
-    //janela(){
-      //  get: () => {
-      //  return this.dialog
-      //  },   
-      //  set: (newValue) => {
-      //     return newValue        
-      // }
-    //  }
   },
 
   methods: {
-    ...mapActions('store', ['addTask' ,'getAllDespesas']),
-
+    ...mapActions('store', ['updateDespesaUserCategoria']),
 
     onSubmit() {
-    
-      
-     // this.addTask(this.formDespesa)
       this.onReset()
      // this.dialog = true
+
+     console.log(this.form)
+
+    //  this.updateDespesaUserCategoria(this.form)
 
       this.$q.notify({
         color: "green-4",
@@ -209,17 +175,11 @@ export default {
       });
     },
 
-    getDespesas(){
-      this.getAllDespesas()
-    },
-
     setData(value) {
-      this.data = value;
+      this.form.data = value;
     },
     onReset() {
-      this.valorDespesa = ''
-      
-     
+      this.form = []
     },
 
     filterFn(val, update) {
@@ -241,26 +201,20 @@ export default {
 
   watch:{
     valorDespesa(value){
-      // console.log(typeof(value))
-      // console.log(parseFloat(value))
-      // console.log(Number(value))
-      this.valor = Number(value)
+      this.form.valor = Number(value)
     },
 
     dados(value){
-      console.log(value)
-      this.data = value.desp_data
-      this.categoria = value.cat_descricao
-      this.modalidade = value.desp_descricao
-      this.valorDespesa = value.desp_valor
-      this.observacao = value.desp_observacao
+      this.form.id = value.id
+      this.form.data = value.data
+      this.form.categoria = value.categoria
+      this.form.descricao = value.descricao
+      this.form.valor = value.valor
+      this.form.observacao = value.observacao
 
       this.dialog =true
     },
 
-    janela(value){
-      console.log(value)
-    }
   }
 };
 </script>

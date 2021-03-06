@@ -5,8 +5,10 @@
 </template>
 <script>
 
-
+import moment from 'moment'
 export default {
   name: 'App'
 }
+
+// Vue.prototype.moment = moment
 </script>

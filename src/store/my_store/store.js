@@ -3,196 +3,144 @@
 // import * as mutations from './mutations'
 // import * as actions from './actions'
 import { uid } from 'quasar'
-// export default {
-//   namespaced: true,
-//   state,
-//   getters,
-//   mutations,
-//   actions
-// }
-
-
 import Vue from 'vue'
 import { firebaseAuth, firebaseDb } from 'boot/firebase'
-
+const table_despesas_user_categoria = "ev_db/DESPESAS_USER_CATEGORIA"
 
 const state = {
-  //   userDetails: {},
-  //   users: {},
-  listaDespesas: [
-    // {
-    //   id: 1,
-    //   data: "21/10/2021",
-    //   modalidade: "Obra",
-    //   categoria: "Google",
-    //   valor: 2125,
-    //   observacao: "observacao",
-    // }
-
-  ]
-
+  listaDespesas: {}
 }
 
 const mutations = {
-  ADD_TASK (state, payload) {
-    //  Vue.set(state.tasks, payload.task)
-
-    state.listaDespesas.push(payload)
+  ADD_DESPESA (state, payload) {
+    state.listaDespesas = {}
+    Object.assign(state.listaDespesas, payload)
+    // console.log(state.listaDespesas)
   },
-  // // altera o state
-  // setUserDetails (state, payload) {
-  //   state.userDetails = payload
-  // },
-  // addUser (state, payload) {
-  //   // console.log('payload: ', payload)
-  //   //state.users[payload.userId] = payload.setUserDetails
-  //   Vue.set(state.users, payload.userId, payload.userDetails)
-  // },
-  // updateUser (state, payload) {
-  //   Object.assign(state.users[payload.userId], payload.userDetails)
-  // },
-  // addMessage (state, payload) {
-  //   Vue.set(state.messages, payload.messageId, payload.messageDetails)
-  // },
-  // clearMessages (state) {
-  //   state.messages = {}
-  // }
+
+  UPDATE_DESPESA (state, payload) {
+    state.listaDespesas.push(payload)
+    Object.assign(state.listaDespesas[id], payload)
+  },
+
+
 }
 const actions = {
 
-  getAllDespesas ({ commit, dispatch }) {
-    //let result = dispatch('getUsersDespesa', "UID1", snap => console.log(snap.val()))
+  getAllDespesas ({ commit }) {
+    const despesas = firebaseDb.ref(table_despesas_user_categoria);
 
-    const despesas = firebaseDb.ref('ev_db/DESPESAS_USER_CATEGORIA');
-    const users = firebaseDb.ref('ev_db/USERS');
-
-    despesas.on('child_added', snap => {
-      // let userRef = users.child(snap.user)
-      // console.log(snap.val().user)
-      //users.child(snap.val().user).once('value', snapshot => {
-      //console.log(snap.val())
-      // let users = snapshot.val();
-
+    //Ler dados do banco
+    despesas.once('value', snap => {
       let payload = snap.val()
-      //user: users
-
-
-
-
-
-      commit('ADD_TASK', payload)
-      console.log(payload)
-      // })
-
-
+      // console.log(payload)
+      commit('ADD_DESPESA', payload)
     })
 
 
+    // despesas.once('child_added', snap => {
+    //   let payload = snap.val()
+    //   // console.log(payload)
+    //   commit('ADD_DESPESA', payload)
+    // })
 
 
-    // despesas.on('child_added', snapshot => {
+    //Ler dados que atualizarem
+    // despesas.once('child_changed', snapshot => {
+    //   let payload = snapshot.val()
 
-    //   let despesasValue = snapshot.val()
-    //   let despesasId = snapshot.key
+    //   commit('ADD_DESPESA', payload)
 
-    //   const users = firebaseDb.ref('ev_db/USERS');
+    // })
 
-    //   let despesaUser = users.on('child_added', despesasValue.user)
+    //Capturar dados deletados
+    // userTasks.on('child_removed', snapshot => {
+    //   let taskId = snapshot.key
 
-    //   let payload = {
-    //     id: despesasId,
-    //     values: despesasValue,
-    //     user: despesaUser
-    //   }
-    //   console.log(payload.values)
+    //   commit('DELETE_TASK', taskId)
 
-    //   // commit('ADD_TASK', payload)
-    //   // chama mutations
-    //   // commit('addUser', {
-    //   //   userId,
-    //   //   userDetails
-    //   // })
-    //})
+    // })
+
+  },
 
 
-  }
 
-  // registerUser ({ }, payload) {
-  //   //console.log('payload : ', payload)
-  //   firebaseAuth.createUserWithEmailAndPassword(payload.email, payload.password)
-  //     .then(response => {
-  //       //console.log(response)
-  //       let userId = firebaseAuth.currentUser.uid;
-  //       firebaseDb.ref('users/' + userId).set({
-  //         name: payload.name,
-  //         email: payload.email,
-  //         online: true
-  //       })
-  //     })
-  //     .catch(error => {
-  //       console.log(error.message)
-  //     })
-  //},
+  getAllDespesasChanged ({ commit }) {
+    console.log('Atualizouuuuu')
+    const despesas = firebaseDb.ref(table_despesas_user_categoria);
 
-  // loginUser ({ }, payload) {
-  //   firebaseAuth.signInWithEmailAndPassword(payload.email, payload.password)
-  //     .then(response => {
-  //       console.log(response)
-  //       this.$router.push('/index')
-  //     })
-  //     .catch(error => {
-  //       console.log(error.message)
-  //     })
-  // },
+    despesas.on('child_changed', snap => {
+      let payload = snap.val()
+      commit('UPDATE_DESPESA', payload)
+    })
 
-  // logoutUser () {
-  //   firebaseAuth.signOut()
-  // },
+  },
 
 
-  // handleAuthStateChanged ({ commit, dispatch, state }) {
-  //   firebaseAuth.onAuthStateChanged(user => {
-  //     if (user) {
-  //       // User logado.
-  //       let userId = firebaseAuth.currentUser.uid;
-  //       firebaseDb.ref('users/' + userId).once('value', snapshot => {
-  //         let userLogado = snapshot.val()
-  //         //chama o mutations
-  //         commit('setUserDetails', {
-  //           name: userLogado.name,
-  //           email: userLogado.email,
-  //           userId: userId
-  //         })
-  //       })
-  //       // alterará o banco firebase
-  //       dispatch('firebaseUpdateUser', {
-  //         userId: userId,
-  //         updates: {
-  //           //nome
-  //           //email
-  //           online: true
-  //         }
-  //       })
-  //       dispatch('firebaseGetUsers')
-  //       this.$router.push('/users')
-  //     } else {
-  //       // user deslogado
-  //       // alterará o banco firebase
-  //       dispatch('firebaseUpdateUser', {
-  //         userId: state.userDetails.userId,
-  //         updates: {
-  //           //nome
-  //           //email
-  //           online: false
-  //         }
-  //       })
-  //       // limpa o state
-  //       commit('setUserDetails', {})
-  //       this.$router.replace('/login')
+  addDespesaUserCategoria ({ dispatch }, payload) {
+    console.log(payload)
+    let despesa_id = uid()
+    // let userId = uid()
+    //let userId = firebaseAuth.currentUser.uid
 
-  //     }
-  //   });
-  // },
+    let userId = {
+      "id": "UID2",
+      "name": "Vanelli",
+      "email": "vanelli@teste.com",
+      "created": "2019/05/12",
+      "update": "2019/05/12",
+      "active": true,
+      "admin": true
+    }
+
+    payload.id = despesa_id
+    payload.user = userId
+
+
+    let taskRef = firebaseDb.ref(table_despesas_user_categoria + '/' + despesa_id)
+
+    taskRef.set(payload).then(resposta => {
+
+      return dispatch('getAllDespesas')
+
+    }).catch(error => {
+      console.log(error)
+    });
+
+  },
+
+  updateDespesaUserCategoria ({ dispatch }, payload) {
+    // let userId = firebaseAuth.currentUser.uid
+    console.log(payload)
+
+    let userId = {
+      "id": "UID2",
+      "name": "Vanelli",
+      "email": "vanelli@teste.com",
+      "created": "2019/05/12",
+      "update": "2019/05/12",
+      "active": true,
+      "admin": true
+    }
+    let despesa_id = payload.id
+    let taskRef = firebaseDb.ref(table_despesas_user_categoria + '/' + despesa_id)
+
+
+    taskRef.update(payload, error => {
+      if (error) {
+        console.log('Atualizado')
+        return true
+      } else {
+
+        return dispatch('getAllDespesasChanged')
+
+      }
+    })
+  },
+
+
+
+
 
   // firebaseUpdateUser ({ }, payload) {
   //   if (payload.userId) {
@@ -234,12 +182,7 @@ const actions = {
   //   }
   // },
 
-  // firebaseSendMessage ({ }, payload) {
-  //   firebaseDb.ref('chats/' + state.userDetails.userId + '/' + payload.otherUserId).push(payload.message)
 
-  //   payload.message.from = 'them'
-  //   firebaseDb.ref('chats/' + payload.otherUserId + '/' + state.userDetails.userId).push(payload.message)
-  // }
 }
 const getters = {
   // users: state => {
@@ -254,6 +197,31 @@ const getters = {
   //   })
   //   return usersFiltered
   // }
+  // allDespesas: (state) => {
+  //   let tasksSorted = {}
+  //   let keysOrdered = Object.keys(state.listaDespesas)
+
+  //   keysOrdered.sort((a, b) => {
+
+  //     let taskA = state.listaDespesas[a][state.sort]
+  //     let taskB = state.listaDespesas[b][state.sort]
+
+  //     if (taskA > taskB) return 1
+  //     else if (taskA < taskB) return -1
+  //     else return 0
+  //   })
+
+  //   keysOrdered.forEach((key) => {
+  //     tasksSorted[key] = state.listaDespesas[key]
+  //   })
+
+  //   return tasksSorted
+  // },
+
+
+  allDespesas: state => {
+    return state.listaDespesas
+  }
 }
 
 export default {

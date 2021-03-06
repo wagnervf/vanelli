@@ -10,7 +10,10 @@
     >
       <q-card class="bg-white">
         <q-card-section class="row bg-red-4 flex">
-          <div class="col text-h5 text-white">Nova Despesa</div>        
+          <div class="col text-h5 text-white"> 
+            <span v-if="isAdd">Nova</span>
+            <span v-else>Editar</span>
+             Despesa</div>        
           <div class="col text-right">
             <q-btn
               round
@@ -25,39 +28,13 @@
         <q-card-section class="q-gutter-md">
             <!-- v-on:submit.prevent="onSubmit" -->
 
-          <q-form
-            role="form"
-            
-            class="q-gutter-md"
-          >
-            <inputDate label="Data" @update="setData($event)" />
+          <q-form role="form" class="q-gutter-sm">
+            <inputDate 
+              label="Data" 
+              @update="setData($event)" 
+              :dataEdit="this.formDespesa.data" />
 
-            <q-select
-              filled
-              v-model="formDespesa.modalidade"
-              transition-show="flip-up"
-              transition-hide="flip-down"
-              use-input
-              input-debounce="0"
-              label="Modalidade"
-              :options="modalidades"
-              @filter="filterFn"
-              behavior="menu"
-              clearable
-              :rules="[
-                (val) => (val !== null && val !== '') || 'Informe a Modalidade',
-              ]"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-
-            <q-select
+           <q-select
               filled
               v-model="formDespesa.categoria"
               use-input
@@ -65,9 +42,7 @@
               label="Categoria"
               :options="options"
               @filter="filterFn"
-              behavior="menu"
-              transition-show="flip-up"
-              transition-hide="flip-down"
+              behavior="dialog"
               clearable
               :rules="[
                 (val) => (val !== null && val !== '') || 'Informe a Categoria',
@@ -81,6 +56,17 @@
                 </q-item>
               </template>
             </q-select>
+
+            <q-input
+              filled
+              v-model="formDespesa.descricao"
+              label="Descrição"
+              type="text"
+              reverse-fill-mask
+              input-class="text-left"            
+              lazy-rules
+              :rules="[(val) => (val && val.length > 0) || 'Valor Obrigatório']"
+            />
 
             <q-input
               filled
@@ -104,52 +90,48 @@
               label="Observação"
             />
 
-            <div class="text-right">
+            <div class="text-right q-mt-md q-gutter-x-sm">
               <q-btn
                 label="Cancelar"
-                type="reset"
-                color="red"
-                v-close-popup
-                flat
+                color="red-4"
+                @click="closeDialog()"
+                outline
                 class="q-ml-sm"
               />
               <q-btn
                 label="Salvar"
                 @click="onSubmit()"
-                color="primary"
+                color="teal"
+                outline
               />
             </div>
           </q-form>
         </q-card-section>
+
+        {{this.formDespesa}}
+
       </q-card>
     </q-dialog>
-
-    <div class="absolute-bottom text-center">
-      <q-btn
-        round
-        color="red-4"
-        icon="add"
-        @click="dialog = !dialog"
-        class="q-ma-sm"
-      />
-
-      <q-btn
-        round
-        color="indigo"
-        icon="home"
-        @click="getDespesas()"
-        class="q-ma-sm"
-      />
-    </div>
-
-
+    
   </div>
 </template>
 <script>
-const stringOptions = ["Google", "Facebook", "Twitter", "Apple", "Oracle"];
+
+import { listaCategorias } from '../../dados/listaCategorias'
 import inputDate from "../../components/input_date";
 import { mapActions } from 'vuex'
+import mixinUtils from '../../mixins/mixin-utils'
+const stringOptions =  listaCategorias.sort()
+
 export default {
+  mixins: [mixinUtils],
+   props: {  
+    dados: {
+      type: Object,
+      default: {}
+    }, 
+    dialogProp:"" 
+  },
   components: {
     inputDate,
   },
@@ -157,11 +139,13 @@ export default {
     return {
       dialog: false,
       maximizedToggle: true,
+      isAdd: false,
 
       formDespesa: {
-        data: '',
-        modalidade: '',
+        id: null,
+        data: '',        
         categoria: '',
+        descricao: '',
         valor: '',
         observacao: '',
       },
@@ -169,27 +153,30 @@ export default {
       model: null,
       stringOptions:'',
       options: stringOptions,
-      modalidades: [
-        "Conta Fixa",
-        "Obra",
-        "Ampliação",
-        "Reforma",
-        "Segurança",
-        "Reposição",
-      ],
+    
     };
   },
 
+  computed: {},
+
   methods: {
-    ...mapActions('store', ['addTask' ,'getAllDespesas']),
+    ...mapActions('store', ['getAllDespesas', 'addDespesaUserCategoria', 'updateDespesaUserCategoria']),
 
 
     onSubmit() {
-      console.log(this.formDespesa);
-      
-      this.addTask(this.formDespesa)
+            
+      if(this.isAdd){
+         this.addDespesaUserCategoria(this.formDespesa)
+         console.log('Cadastrar')
+      }else{
+
+        this.updateDespesaUserCategoria(this.formDespesa)
+        console.log('Atualizar')
+      }     
+
       this.onReset()
-     // this.dialog = true
+      this.dialog = false
+      this.isAdd = false
 
       this.$q.notify({
         color: "green-4",
@@ -200,24 +187,20 @@ export default {
       });
     },
 
-    getDespesas(){
-      this.getAllDespesas()
+    setData(value) {
+       this.formDespesa.data = value
     },
 
-    setData(value) {
-      this.formDespesa.data = value;
-    },
     onReset() {
-      this.formDespesa = [];
-      this.valorDespesa = ''
-      
-     
+      this.formDespesa = {}
+      this.valorDespesa = ''      
     },
 
     filterFn(val, update) {
       if (val === "") {
         update(() => {
-          this.options = stringOptions;
+          this.options = stringOptions
+          
         });
         return;
       }
@@ -229,14 +212,35 @@ export default {
         );
       });
     },
+
+    closeDialog(){
+     this.dialog = false
+    }
+
   },
 
   watch:{
     valorDespesa(value){
-      // console.log(typeof(value))
-      // console.log(parseFloat(value))
-      // console.log(Number(value))
       this.formDespesa.valor = Number(value)
+    },
+
+    dados(value){       
+      console.log(value)
+      this.formDespesa.id = value.id
+      this.formDespesa.categoria = value.categoria
+      this.formDespesa.descricao = value.descricao      
+      this.formDespesa.observacao = value.observacao
+
+      this.formDespesa.data = this.formatarData(value.data)
+      this.valorDespesa = value.valor
+      this.dialog = true;
+    },
+
+    dialogProp(value){
+      this.dialog = true;
+      this.isAdd = true
+     
+      this.onReset()
     }
   }
 };

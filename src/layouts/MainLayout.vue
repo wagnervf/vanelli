@@ -62,12 +62,13 @@ border-bottom: 1px solid #eee;
 </style>
 
 <script>
+import { mapState, mapActions, mapGetters } from "vuex";
 export default {
     data() {
         return {
             left: false,
             tab: 'tabs'
         }
-    }
+    },
 }
 </script>

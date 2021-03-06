@@ -1,9 +1,10 @@
 <template>
-    <q-page>
+    <q-page class="bg-grey-2" style="display: flow-root">
      
-      <Form  />
-     
+          
       <TableDespesas />
+
+      <!-- <Form  /> -->
       
     </q-page>
 </template>
@@ -23,6 +24,8 @@ export default {
     return {
       dialog: false
     };
-  }
+  },
+
+  
 };
 </script>
