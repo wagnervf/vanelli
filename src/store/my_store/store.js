@@ -19,8 +19,14 @@ const mutations = {
   },
 
   UPDATE_DESPESA (state, payload) {
-    state.listaDespesas.push(payload)
-    Object.assign(state.listaDespesas[id], payload)
+    state.listaDespesas[payload.id] = {}
+    Object.assign(state.listaDespesas[payload.id], payload)
+  },
+
+  DELETE_DESPESA (state, payload) {
+
+    // forma de deletar que exclui em tempo real
+    Vue.delete(state.listaDespesas, payload.id)
   },
 
 
@@ -29,53 +35,17 @@ const actions = {
 
   getAllDespesas ({ commit }) {
     const despesas = firebaseDb.ref(table_despesas_user_categoria);
-
     //Ler dados do banco
     despesas.once('value', snap => {
       let payload = snap.val()
-      // console.log(payload)
       commit('ADD_DESPESA', payload)
     })
 
-
-    // despesas.once('child_added', snap => {
-    //   let payload = snap.val()
-    //   // console.log(payload)
-    //   commit('ADD_DESPESA', payload)
-    // })
-
-
-    //Ler dados que atualizarem
-    // despesas.once('child_changed', snapshot => {
-    //   let payload = snapshot.val()
-
-    //   commit('ADD_DESPESA', payload)
-
-    // })
-
-    //Capturar dados deletados
-    // userTasks.on('child_removed', snapshot => {
-    //   let taskId = snapshot.key
-
-    //   commit('DELETE_TASK', taskId)
-
-    // })
-
-  },
-
-
-
-  getAllDespesasChanged ({ commit }) {
-    console.log('Atualizouuuuu')
-    const despesas = firebaseDb.ref(table_despesas_user_categoria);
-
-    despesas.on('child_changed', snap => {
-      let payload = snap.val()
+    despesas.on("child_changed", snapshot => {
+      let payload = snapshot.val()
       commit('UPDATE_DESPESA', payload)
     })
-
   },
-
 
   addDespesaUserCategoria ({ dispatch }, payload) {
     console.log(payload)
@@ -111,8 +81,6 @@ const actions = {
 
   updateDespesaUserCategoria ({ dispatch }, payload) {
     // let userId = firebaseAuth.currentUser.uid
-    console.log(payload)
-
     let userId = {
       "id": "UID2",
       "name": "Vanelli",
@@ -122,21 +90,47 @@ const actions = {
       "active": true,
       "admin": true
     }
-    let despesa_id = payload.id
-    let taskRef = firebaseDb.ref(table_despesas_user_categoria + '/' + despesa_id)
+
+    let despesa = firebaseDb.ref(table_despesas_user_categoria + '/' + payload.id)
 
 
-    taskRef.update(payload, error => {
+    despesa.update(payload, error => {
       if (error) {
-        console.log('Atualizado')
-        return true
+        console.log('Erro ao atualizar')
+        return false
       } else {
-
-        return dispatch('getAllDespesasChanged')
+        console.log('Atualizou com sucesso')
+        return dispatch('getAllDespesas')
 
       }
     })
   },
+
+  deleteDespesaUserCategoria ({ commit }, payload) {
+    // let userId = firebaseAuth.currentUser.uid
+    let userId = {
+      "id": "UID2",
+      "name": "Vanelli",
+      "email": "vanelli@teste.com",
+      "created": "2019/05/12",
+      "update": "2019/05/12",
+      "active": true,
+      "admin": true
+    }
+
+    let despesa = firebaseDb.ref(table_despesas_user_categoria + '/' + payload.id)
+
+    despesa.remove(error => {
+      if (error) {
+        console.log('Erro ao deletar')
+        return false
+      } else {
+        console.log('Deletou com sucesso')
+        commit('DELETE_DESPESA', payload)
+
+      }
+    })
+  }
 
 
 

@@ -140,8 +140,13 @@ export default {
   },
 
   filters: {
-    dataFormatada (value) {
-      return date.formatDate(value, 'D/M/YYYY')
+    filterDataFormatada (value) {
+      moment.locale('pt-br');
+      return moment(value).format('DD/MM/YYYY')
+    },
+
+    filterMoedaFormatada (value) {
+      return value.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })
     }
   }
 }

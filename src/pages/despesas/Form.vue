@@ -32,7 +32,7 @@
             <inputDate 
               label="Data" 
               @update="setData($event)" 
-              :dataEdit="this.formDespesa.data" />
+              :dataEdit="this.dataEdit" />
 
            <q-select
               filled
@@ -122,6 +122,7 @@ import inputDate from "../../components/input_date";
 import { mapActions } from 'vuex'
 import mixinUtils from '../../mixins/mixin-utils'
 const stringOptions =  listaCategorias.sort()
+import { date } from 'quasar'
 
 export default {
   mixins: [mixinUtils],
@@ -153,6 +154,7 @@ export default {
       model: null,
       stringOptions:'',
       options: stringOptions,
+      dataEdit: ''
     
     };
   },
@@ -160,7 +162,11 @@ export default {
   computed: {},
 
   methods: {
-    ...mapActions('store', ['getAllDespesas', 'addDespesaUserCategoria', 'updateDespesaUserCategoria']),
+    ...mapActions('store', [
+      'getAllDespesas',
+      'addDespesaUserCategoria',
+      'updateDespesaUserCategoria'
+      ]),
 
 
     onSubmit() {
@@ -168,6 +174,7 @@ export default {
       if(this.isAdd){
          this.addDespesaUserCategoria(this.formDespesa)
          console.log('Cadastrar')
+
       }else{
 
         this.updateDespesaUserCategoria(this.formDespesa)
@@ -189,6 +196,18 @@ export default {
 
     setData(value) {
        this.formDespesa.data = value
+    },
+
+    setDataEdit(value){
+      this.dataEdit = ''
+      setTimeout(() => {  
+          let day = date.addToDate(value, { days: 1 })
+          day = date.formatDate(day, "YYYY-MM-DD")
+          this.dataEdit = day
+          this.setData(day)
+      }, 500);
+      
+      
     },
 
     onReset() {
@@ -224,14 +243,15 @@ export default {
       this.formDespesa.valor = Number(value)
     },
 
-    dados(value){       
-      console.log(value)
+    dados(value){    
+      console.log(value)   
       this.formDespesa.id = value.id
       this.formDespesa.categoria = value.categoria
       this.formDespesa.descricao = value.descricao      
-      this.formDespesa.observacao = value.observacao
+      this.formDespesa.observacao = value.observacao ? value.observacao : ""
 
-      this.formDespesa.data = this.formatarData(value.data)
+
+      this.setDataEdit(value.data)
       this.valorDespesa = value.valor
       this.dialog = true;
     },
@@ -239,7 +259,6 @@ export default {
     dialogProp(value){
       this.dialog = true;
       this.isAdd = true
-     
       this.onReset()
     }
   }
