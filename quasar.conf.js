@@ -22,7 +22,8 @@ module.exports = function (/* ctx */) {
       'firebase',
       //'router-auth',
       //'composition-api',
-      //'axios',
+      //'axios',     
+      'addressbar-color',
       'i18n',
     ],
 
@@ -109,7 +110,9 @@ module.exports = function (/* ctx */) {
         'SessionStorage',
         'Notify',
         'Meta',
-        'AddressbarColor'
+        'AddressbarColor',
+        'BottomSheet',
+
       ]
     },
 

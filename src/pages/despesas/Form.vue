@@ -9,20 +9,23 @@
       transition-hide="slide-down"
     >
       <q-card class="bg-white">
-        <q-card-section class="row bg-red-4 flex">
-          <div class="col text-h5 text-white"> 
-            <span v-if="isAdd">Nova</span>
-            <span v-else>Editar</span>
-             Despesa</div>        
-          <div class="col text-right">
+        <q-card-section class="row bg-red-4 flex-inline q-pa-sm">
+          <div class="col q-ma-none text-left">
             <q-btn
               round
               flat
               color="white"
-              icon="close"
+              icon="arrow_back"
               v-close-popup             
             />
           </div>
+          <div class="col-6 text-h5 q-ma-none text-white" style="line-height:1.7"> 
+            <span v-if="isAdd">Nova</span>
+            <span v-else>Editar</span>
+             Despesa
+          </div> 
+          <span class="col"></span>      
+          
         </q-card-section>
        
         <q-card-section class="q-gutter-md">
@@ -32,9 +35,11 @@
             <inputDate 
               label="Data" 
               @update="setData($event)" 
-              :dataEdit="this.dataEdit" />
+              :dataEdit="this.dataEdit"
+              class="q-pb-md"
+            />
 
-           <q-select
+            <q-select
               filled
               v-model="formDespesa.categoria"
               use-input
@@ -92,17 +97,31 @@
 
             <div class="text-right q-mt-md q-gutter-x-sm">
               <q-btn
-                label="Cancelar"
-                color="red-4"
+                label="Fechar"
+                color="orange"
                 @click="closeDialog()"
-                outline
-                class="q-ml-sm"
+                flat
+                class="q-ma-xs"
+                dense
+                icon-right="close"
+              />
+              <q-btn
+                label="Deletar"
+                color="red-4"
+                @click="deleteDespesa()"
+                flat
+                class="q-ma-xs"
+                dense
+                icon-right="delete"
               />
               <q-btn
                 label="Salvar"
                 @click="onSubmit()"
                 color="teal"
-                outline
+                flat
+                dense
+                class="q-ma-xs"
+                icon-right="save"
               />
             </div>
           </q-form>
@@ -115,8 +134,28 @@
     
   </div>
 </template>
-<script>
+<style lang="sass">
 
+div.q-dialog__inner.flex.no-pointer-events.q-dialog__inner--minimized.q-dialog__inner--standard.fixed-full.flex-center > div > div.q-card__actions.q-card__actions--horiz.row.justify-end > button:nth-child(1)
+  background: white!important;
+  color: red!important;
+  border: 1px solid red !important
+  text-transform: capitalize;
+
+div.q-dialog__inner.flex.no-pointer-events.q-dialog__inner--minimized.q-dialog__inner--standard.fixed-full.flex-center > div > div.q-card__actions.q-card__actions--horiz.row.justify-end > button:nth-child(2)
+  background: white!important;
+  color: #009688 !important;
+  border: 1px solid #009688 !important
+  text-transform: capitalize;
+
+.q-btn__wrapper:before
+  box-shadow:none!important
+
+</style>
+
+
+<script>
+import { Notify } from 'quasar'
 import { listaCategorias } from '../../dados/listaCategorias'
 import inputDate from "../../components/input_date";
 import { mapActions } from 'vuex'
@@ -159,13 +198,24 @@ export default {
     };
   },
 
+  // beforeMount() {
+  //    setTimeout(() => {
+  //       moment.locale('pt-br');
+  //       let hj = moment().format('L')
+  //       this.setData(hj)
+  //    }, 500);
+  // }, 
+
   computed: {},
+
+
 
   methods: {
     ...mapActions('store', [
       'getAllDespesas',
       'addDespesaUserCategoria',
-      'updateDespesaUserCategoria'
+      'updateDespesaUserCategoria',
+      'deleteDespesaUserCategoria'
       ]),
 
 
@@ -185,13 +235,7 @@ export default {
       this.dialog = false
       this.isAdd = false
 
-      this.$q.notify({
-        color: "green-4",
-        textColor: "white",
-        icon: "cloud_done",
-        message: 'Dados salvos com sucesso!'
-       // message: "Submitted"
-      });
+     this.mensagemSucesso('Dados salvos com sucesso!')
     },
 
     setData(value) {
@@ -205,10 +249,50 @@ export default {
           day = date.formatDate(day, "YYYY-MM-DD")
           this.dataEdit = day
           this.setData(day)
-      }, 500);
-      
-      
+      }, 500);     
     },
+
+    deleteDespesa() {
+       this.$q.dialog({
+        title: 'Deletar Despesa',
+        message: 'Tem certeza que sejsa excluir a Despesa?',
+        persistent: true,
+        
+        cancel: true,
+        ok: {
+          label : 'Sim',
+          outlined: true,
+          
+        },
+        cancel: {
+          label : 'Não',
+          push: false
+          
+        },
+      }).onOk(() => {
+        this.deleteDespesaUserCategoria(this.formDespesa);
+        this.mensagemSucesso('Despesa deletada com sucesso!')
+        
+      }).onCancel(() => {
+        this.dialog = false
+        this.onReset()
+      }).onDismiss(() => {
+        this.dialog = false
+        this.onReset()
+      })
+     
+    },
+
+    mensagemSucesso(value){
+      this.$q.notify({
+        color: "green-4",
+        textColor: "white",
+        type: 'positive',
+        icon: "cloud_done",
+        message: value
+      });
+    },
+
 
     onReset() {
       this.formDespesa = {}
@@ -219,7 +303,6 @@ export default {
       if (val === "") {
         update(() => {
           this.options = stringOptions
-          
         });
         return;
       }
@@ -249,7 +332,6 @@ export default {
       this.formDespesa.categoria = value.categoria
       this.formDespesa.descricao = value.descricao      
       this.formDespesa.observacao = value.observacao ? value.observacao : ""
-
 
       this.setDataEdit(value.data)
       this.valorDespesa = value.valor

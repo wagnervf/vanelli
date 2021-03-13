@@ -6,16 +6,19 @@ import { uid } from 'quasar'
 import Vue from 'vue'
 import { firebaseAuth, firebaseDb } from 'boot/firebase'
 const table_despesas_user_categoria = "ev_db/DESPESAS_USER_CATEGORIA"
+import mixinUtils from '../../mixins/mixin-utils'
 
 const state = {
-  listaDespesas: {}
+  listaDespesas: {},
+  datasMesAtual: {},
+  datasDoFiltro: {},
+  possuiFiltro: false
 }
 
 const mutations = {
   ADD_DESPESA (state, payload) {
     state.listaDespesas = {}
     Object.assign(state.listaDespesas, payload)
-    // console.log(state.listaDespesas)
   },
 
   UPDATE_DESPESA (state, payload) {
@@ -24,27 +27,58 @@ const mutations = {
   },
 
   DELETE_DESPESA (state, payload) {
-
     // forma de deletar que exclui em tempo real
     Vue.delete(state.listaDespesas, payload.id)
   },
+
+  ADD_FILTRO_MES_ATUAL (state, payload) {
+    state.datasMesAtual = {}
+    Object.assign(state.datasMesAtual, payload)
+  },
+
+  ADD_DATA_FILTRADA (state, payload) {
+    state.datasDoFiltro = {}
+    Object.assign(state.datasDoFiltro, payload)
+  }
 
 
 }
 const actions = {
 
-  getAllDespesas ({ commit }) {
-    const despesas = firebaseDb.ref(table_despesas_user_categoria);
-    //Ler dados do banco
-    despesas.once('value', snap => {
-      let payload = snap.val()
-      commit('ADD_DESPESA', payload)
-    })
 
-    despesas.on("child_changed", snapshot => {
-      let payload = snapshot.val()
-      commit('UPDATE_DESPESA', payload)
-    })
+
+  getAllDespesas ({ commit }, filtro) {
+    const despesas = firebaseDb.ref(table_despesas_user_categoria);
+
+    despesas.orderByChild("data")
+      .startAt(filtro.inicio)
+      .endAt(filtro.fim)
+      .once('value', snap => {
+
+        let payload = snap.val()
+
+        console.log(payload)
+
+        commit('ADD_DESPESA', payload)
+
+
+      });
+
+
+
+
+    //console.log(value.val())
+    //Ler dados do banco
+    // despesas.once('value', snap => {
+    //   let payload = snap.val()
+    //   commit('ADD_DESPESA', payload)
+    // })
+
+    // despesas.on("child_changed", snapshot => {
+    //   let payload = snapshot.val()
+    //   commit('UPDATE_DESPESA', payload)
+    // })
+
   },
 
   addDespesaUserCategoria ({ dispatch }, payload) {
@@ -130,7 +164,21 @@ const actions = {
 
       }
     })
-  }
+  },
+
+
+
+  setInicioFimMesAtual ({ commit }, filtro) {
+    commit('ADD_FILTRO_MES_ATUAL', filtro)
+  },
+
+  setDataFiltrada ({ commit }, filtro) {
+    commit('ADD_DATA_FILTRADA', filtro)
+  },
+
+  // setDataFiltros ({ commit }, payload) {
+  //   commit('ADD_FILTRO_MES_ATUAL', payload)
+  // }
 
 
 
@@ -213,9 +261,21 @@ const getters = {
   // },
 
 
+
   allDespesas: state => {
     return state.listaDespesas
+  },
+
+  mesAtual: state => {
+    return state.datasMesAtual
+  },
+
+  dataSetadaNoFiltro: state => {
+    return state.datasDoFiltro
   }
+
+
+
 }
 
 export default {

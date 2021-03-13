@@ -1,6 +1,10 @@
 <template>
-  <div class="q-pa-md row justify-center">
-    <q-date
+  <div class="q-pa-none row justify-center">
+     <div class="row fit justify-center q-pa-sm bg-primary text-white">
+        <h5 class="text-h5 q-ma-none">Agenda</h5>
+      </div> 
+    
+   <q-date
       v-model="date"
       :events="events"
       @click="alert = true"
@@ -94,7 +98,16 @@
           <q-btn flat label="OK" color="primary" v-close-popup />
         </q-card-actions>
       </q-card>
-    </q-dialog>
+    </q-dialog> 
+ 
+ 
+  
+  <daykeep-calendar-agenda
+    :event-array="someEventObject"
+    :sunday-first-day-of-week="true"
+    :allow-editing="true"
+    :render-html="true"    
+  />
   </div>
 </template>
 
@@ -139,6 +152,12 @@
 <script>
 import { date } from "quasar";
 import formCalendario from "../../components/formCalendario";
+//import { DaykeepCalendar } from '@daykeep/calendar-quasar'
+import {
+  DaykeepCalendarMonth,
+  DaykeepCalendarAgenda,
+  DaykeepCalendarMultiDay
+} from '@daykeep/calendar-quasar'
 
 //let timeStamp = Date.now()
 //let formattedString = date.formatDate(timeStamp, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
@@ -148,7 +167,16 @@ export default {
 
   components: {
     formCalendario,
+     DaykeepCalendarMonth,
+  DaykeepCalendarAgenda,
+  DaykeepCalendarMultiDay
   },
+
+  //Cor da Barra Inicial
+  // created () {
+  //   this.$q.addressbarColor.set('#1976D2')
+  // },
+
 
   data() {
     return {
@@ -156,6 +184,57 @@ export default {
       splitterModel: 50,
       date: date.formatDate(Date.now(), "YYYY/MM/DD"),
       events: ["2021/01/12", "2021/01/05"],
+      now: date.formatDate(Date.now(), "YYYY-DD-MM"),
+
+     someEventObject: [
+  {
+    id: 1,
+    summary: 'Test event',
+    description: 'Some extra info goes here',
+    location: 'Office of the Divine Randomness, 1232 Main St., Denver, CO',
+    start: {
+      dateTime: '2021-03-16T14:00:00', // ISO 8601 formatted
+      timeZone: 'America/New_York' // Timezone listed as a separate IANA code
+    },
+    end: {
+      dateTime: '2021-03-16T16:30:00',
+      timeZone: 'American/New_York'
+    },
+    color: 'positive',
+    attendees: [
+      {
+        id: 5,
+        email: 'somebody@somewhere.com',
+        displayName: 'John Q. Public',
+        organizer: false,
+        self: false,
+        resource: false
+      }
+    ]
+  },
+  {
+    id: 2,
+    summary: 'Test all-day event',
+    description: 'Some extra info goes here',
+    start: {
+      date: '2021-03-16' // A date variable indicates an all-day event
+    },
+    end: {
+      date: '2021-03-19'
+    }
+  },
+    {
+      id: 3,
+      summary: 'Some other test event',
+      description: 'Some extra info goes here',
+      start: {
+        dateTime: '2021-03-17T10:00:00+0500', // timezone embedded in dateTime
+      },
+      end: {
+        dateTime: '2021-03-17T12:30:00+0500',
+      },
+    },
+]
     };
   },
 

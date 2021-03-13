@@ -1,12 +1,13 @@
 <template>
-    <q-page class="bg-grey-2" style="display: flow-root">
+    <div class="bg-white q-ma-none" >
+      <div class="row fit justify-center q-pa-sm bg-red-4 text-white">
+        <h5 class="text-h5 q-ma-none">Despesas</h5>
+      </div> 
      
           
       <TableDespesas />
-
-      <!-- <Form  /> -->
       
-    </q-page>
+    </div>
 </template>
 
 <script>
@@ -20,6 +21,11 @@ export default {
     Form,
     TableDespesas
   },
+
+  created () {
+    this.$q.addressbarColor.set('#e57373')
+  },
+
   data() {
     return {
       dialog: false

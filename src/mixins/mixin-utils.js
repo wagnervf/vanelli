@@ -122,7 +122,84 @@ export default {
       moment.locale('pt-br');
       return moment(value).format('DD/MM/YYYY')
       //  return date.formatDate(value, 'D/M/YYYY')
-    }
+    },
+
+    formatarDataMoment (value) {
+      moment.locale('pt-br');
+      return moment(value).format('YYYY-MM-DD')
+      //return date.formatDate(value, 'YYYY-MM-DD')
+    },
+
+    formatarDataFirebase (value) {
+      let dt = value.split('/')
+
+      let ano = dt[2]
+      let mes = dt[1]
+      let dia = dt[0]
+      let formatedDate = ano + "-" + mes + "-" + dia;
+
+      return formatedDate
+    },
+
+    formatarDataFirebaseFiltro (value) {
+      let dt = value.split('/')
+
+      console.log(value)
+      console.log(dt)
+
+      let ano = dt[0]
+      let mes = dt[1]
+      let dia = dt[2]
+      let formatedDate = ano + "-" + mes + "-" + dia;
+
+      return formatedDate
+    },
+
+    mesCorrente () {
+      var month = new Array();
+      month[0] = "Janeiro";
+      month[1] = "Fevereiro";
+      month[2] = "Março";
+      month[3] = "Abril";
+      month[4] = "Maio";
+      month[5] = "Junho";
+      month[6] = "Julho";
+      month[7] = "Agosto";
+      month[8] = "Setembro";
+      month[9] = "Outubro";
+      month[10] = "Novembro";
+      month[11] = "Dezembro";
+
+      var d = new Date();
+      var mes = month[d.getMonth()];
+      return mes
+    },
+
+    primeiroDiaMes () {
+      moment.locale('pt-br');
+      var begin = moment().format("YYYY-MM-01");
+      return begin
+    },
+
+    ultimoDiaMes () {
+      var end = moment().format("YYYY-MM-") + moment().daysInMonth();
+      return end
+    },
+
+    minutoAtual () {
+      moment.locale('pt-br');
+      return moment().format('MMMM Do YYYY, h:mm:ss a')
+    },
+
+    // mes(){
+    ///////   //primeiro e ultimo dia mês //////////////
+    //   var date = new Date();
+    //   var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    //   var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    // }
+
+
+
 
 
 
@@ -145,8 +222,26 @@ export default {
       return moment(value).format('DD/MM/YYYY')
     },
 
+    filterDiaDaSemana (value) {
+      return moment(value).format('dddd').replace('-feira', '')
+    },
+
+    filterDiaDaSemanaNumero (value) {
+      return moment(value).format('DD/MM');
+    },
+
+
+
     filterMoedaFormatada (value) {
       return value.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })
+    },
+
+    filterPrimeiraLetra (value) {
+      return value.charAt(0).toUpperCase()
+
+      // const str = 'ricardo';
+      // const capitalized = str[0].toUpperCase() + str.substr(1); // Ricardo
+
     }
   }
 }
