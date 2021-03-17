@@ -4,21 +4,25 @@
 // import * as actions from './actions'
 import { uid } from 'quasar'
 import Vue from 'vue'
-import { firebaseAuth, firebaseDb } from 'boot/firebase'
+import { firebaseDb } from 'boot/firebase'
 const table_despesas_user_categoria = "ev_db/DESPESAS_USER_CATEGORIA"
 import mixinUtils from '../../mixins/mixin-utils'
+import { date } from "quasar";
 
 const state = {
-  listaDespesas: {},
+  listaDespesas: [],
   datasMesAtual: {},
   datasDoFiltro: {},
+  diaAtual: '',
   possuiFiltro: false
 }
 
 const mutations = {
   ADD_DESPESA (state, payload) {
-    state.listaDespesas = {}
-    Object.assign(state.listaDespesas, payload)
+    console.log(payload)
+    //state.listaDespesas =
+    // Object.assign(state.listaDespesas, payload)
+    state.listaDespesas.unshift(payload)
   },
 
   UPDATE_DESPESA (state, payload) {
@@ -39,30 +43,63 @@ const mutations = {
   ADD_DATA_FILTRADA (state, payload) {
     state.datasDoFiltro = {}
     Object.assign(state.datasDoFiltro, payload)
+  },
+
+  SET_DIA_ATUAL (state, payload) {
+    state.diaAtual = payload
   }
+
+
 
 
 }
 const actions = {
 
+  getFiltradas ({ commit }, filtro) {
 
+    firebaseDb.collection("despesas_categoria_user")
+      .where('data', '>', filtro.inicio)
+      .where('data', '<', filtro.fim)
+      .orderBy(filtro.campo, filtro.tipo)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          console.log(doc.id, ' => ', doc.data());
+          commit('ADD_DESPESA', doc.data())
+        });
+      })
+  },
 
   getAllDespesas ({ commit }, filtro) {
-    const despesas = firebaseDb.ref(table_despesas_user_categoria);
+    console.log(filtro)
 
-    despesas.orderByChild("data")
+    //commit('ADD_DESPESA', payload)asc
+
+    firebaseDb.collection('despesas_categoria_user')
+      .orderBy(filtro.campo, filtro.tipo)
       .startAt(filtro.inicio)
       .endAt(filtro.fim)
-      .once('value', snap => {
+      .onSnapshot((snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          let itenAlterado = change.doc.data()
+          itenAlterado.id = change.doc.id
 
-        let payload = snap.val()
+          if (change.type === 'added') {
+            console.log(itenAlterado)
+            console.log(date.formatDate(itenAlterado.data, 'YYYY-MM-DD'))
+            commit('ADD_DESPESA', itenAlterado)
 
-        console.log(payload)
-
-        commit('ADD_DESPESA', payload)
-
-
-      });
+          }
+          if (change.type === 'modified') {
+            // let index = this.itens.findIndex(item => item.id === itenAlterado.id)
+            //  Object.assign(this.itens[index], itenAlterado)
+          }
+          if (change.type === 'removed') {
+            //  let index = this.itens.findIndex(item => item.id === itenAlterado.id)
+            // this.itens.splice(index, 1)
+          }
+        })
+      })
 
 
 
@@ -176,6 +213,10 @@ const actions = {
     commit('ADD_DATA_FILTRADA', filtro)
   },
 
+  setDiaAtual ({ commit }, filtro) {
+    commit('SET_DIA_ATUAL', filtro)
+  },
+
   // setDataFiltros ({ commit }, payload) {
   //   commit('ADD_FILTRO_MES_ATUAL', payload)
   // }
@@ -272,6 +313,10 @@ const getters = {
 
   dataSetadaNoFiltro: state => {
     return state.datasDoFiltro
+  },
+
+  diaAtualStore: state => {
+    return state.diaAtual
   }
 
 

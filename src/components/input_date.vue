@@ -18,7 +18,20 @@
             </q-popup-proxy>
           </q-icon>
         </template> 
-    </q-input>
+    </q-input> 
+
+    <!-- <q-datetime-picker
+      :label="label"
+      v-model="date"
+      :display-value="date | filterDataFormatada"
+      clearable
+      danse
+      today-btn
+    >
+      <template v-slot:prepend>
+        <q-icon name="event" class="cursor-pointer"></q-icon>
+      </template>
+    </q-datetime-picker> -->
 
 
     <q-input
@@ -46,6 +59,7 @@
 import { date } from "quasar";
 import moment from 'moment'
 import mixinUtils from '../mixins/mixin-utils'
+import { mapGetters } from "vuex";
 
 export default {
    mixins: [mixinUtils],
@@ -53,38 +67,56 @@ export default {
     label: "",
     dataEdit: "",
     dense: "",
+  //  dataAtual: ""
   },
 
   data() {
     return {
       date: "",
       date2: "",
-      isEdit: false
+      isEdit: false,
     };
   },
 
   
   beforeMount() {
-     setTimeout(() => {
-        moment.locale('pt-br');
-        let hj = moment().format('L')
-       // this.date = hj
-     }, 500);
+    setTimeout(() => {
+      this.date = this.formatarData(Date.now())
+    }, 500);
   }, 
+
+   computed: {
+    ...mapGetters("store", ["diaAtualStore"]),
+
+    diaAtual(){
+      //this.date = this.diaAtualStore;
+     // this.date = this.diaAtualStore;
+    //this.date = Date.now()
+    }
+
+  },
 
   
 
   watch: {
     date(value) {    
       //envia emit para quem usar esse componente
-      this.$emit("update", this.formatarDataFirebase(value));
+      console.log(date.formatDate(value, 'x'))
+     this.$emit("update", date.formatDate(value, 'x'))
+   //   this.$emit("update", value);
     },
 
     dataEdit(value){
       let data_edit = value
       this.isEdit = true     
       this.date2 = data_edit
-    }, 
+    },
+
+  //   dataAtual(value){
+  //     console.log(value)
+  //     this.date = value
+  // }
+
   },
 };
 </script>

@@ -1,6 +1,6 @@
 <template>
-    <div class="bg-white q-ma-none" >
-      <div class="row fit justify-center q-pa-sm bg-red-4 text-white">
+    <div class="bg-white q-ma-none">
+      <div class="row fit justify-center q-py-sm text-red-4">
         <h5 class="text-h5 q-ma-none">Despesas</h5>
       </div> 
      

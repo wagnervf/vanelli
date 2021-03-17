@@ -1,0 +1,12 @@
+{
+  "name": "vanelli",
+  "version": "0.0.1",
+  "description": "Espaço Vanelli ",
+  "author": "Wagner Freiria <wagner.freiria@ufms.br>",
+  "private": true,
+  "dependencies": {
+    "@capacitor/android": "2.4.7",
+    "@capacitor/cli": "^2.0.0",
+    "@capacitor/core": "^2.0.0"
+  }
+}

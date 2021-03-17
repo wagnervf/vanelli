@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh lpR fFf">
+  <q-layout view="lHh lpR fFf" class="bg-white">
     <!-- <q-header class="barraTitulo" height-hint="98">
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="left = !left" />
@@ -27,7 +27,7 @@
           round 
           icon="menu" 
           @click="left = !left"
-          color="white"
+          color="text-grey-8"
           dark
       />
     </div>
@@ -38,8 +38,10 @@
       <Drawer />
     </q-drawer>
 
-    <q-page-container>
-      <router-view />
+    <q-page-container >
+      <keep-alive>
+        <router-view />
+      </keep-alive>
     </q-page-container>
 
     <q-footer elevated class="bg-grey-1 barraTabs">
@@ -58,18 +60,19 @@
             @click="left = !left"
             label="Confi"
           /> -->
+           <q-route-tab
+            name="agenda"
+            icon="event"
+            to="/agenda"
+            label="Agenda"
+          />
           <q-route-tab
             name="despesas"
             icon="money_off"
             to="/despesas"
             label="Despesas"
           />
-          <q-route-tab
-            name="calendario"
-            icon="event"
-            to="/calendario"
-            label="Agenda"
-          />
+         
           <q-route-tab
             name="grafico"
             icon="assessment"

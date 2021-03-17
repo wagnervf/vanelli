@@ -1,6 +1,5 @@
 <template>
   <div class="full-width q-gutter-sm">
-   
     <q-dialog
       v-model="dialog"
       persistent
@@ -11,36 +10,51 @@
       <q-card class="bg-white">
         <q-card-section class="row bg-red-4 flex-inline q-pa-sm">
           <div class="col q-ma-none text-left">
-            <q-btn
-              round
-              flat
-              color="white"
-              icon="arrow_back"
-              v-close-popup             
-            />
+            <q-btn round flat color="white" icon="arrow_back" v-close-popup />
           </div>
-          <div class="col-6 text-h5 q-ma-none text-white" style="line-height:1.7"> 
+          <div
+            class="col-6 text-h5 q-ma-none text-white"
+            style="line-height: 1.7;"
+          >
             <span v-if="isAdd">Nova</span>
             <span v-else>Editar</span>
-             Despesa
-          </div> 
-          <span class="col"></span>      
-          
+            Despesa
+          </div>
+          <span class="col text-right">
+            <q-btn
+                v-if="!isAdd"
+                icon="delete"
+                color="white"
+                outline
+                @click="deleteDespesa()"
+                class="q-ma-xs"
+              />
+          </span>
         </q-card-section>
-       
-        <q-card-section class="q-gutter-md">
-            <!-- v-on:submit.prevent="onSubmit" -->
 
-          <q-form role="form" class="q-gutter-sm">
-            <inputDate 
-              label="Data" 
-              @update="setData($event)" 
+        <q-card-section class="q-pa-lg">
+          <q-form role="form" class="q-gutter-y-md">
+            <!-- <inputDate
+              label="Data"
+              @update="setDataEscolhida($event)"
               :dataEdit="this.dataEdit"
               class="q-pb-md"
-            />
+            /> -->
+
+            <q-datetime-picker
+            label="Data"
+            v-model="date"
+            :display-value="date | filterDataFormatada"
+            clearable
+            danse
+            today-btn
+          >
+            <template v-slot:prepend>
+              <q-icon name="event" class="cursor-pointer"></q-icon>
+            </template>
+          </q-datetime-picker> 
 
             <q-select
-              filled
               v-model="formDespesa.categoria"
               use-input
               input-debounce="0"
@@ -48,33 +62,37 @@
               :options="options"
               @filter="filterFn"
               behavior="dialog"
+              use-chips
               clearable
               :rules="[
                 (val) => (val !== null && val !== '') || 'Informe a Categoria',
               ]"
             >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
+              <template v-slot:prepend>
+                <q-icon name="format_list_bulleted" />
+              </template>
+              <template v-slot:selected-item="scope">
+                <q-chip outline color="red" text-color="red">
+                  {{ scope.opt }}
+                </q-chip>
               </template>
             </q-select>
 
             <q-input
-              filled
               v-model="formDespesa.descricao"
               label="Descrição"
               type="text"
               reverse-fill-mask
-              input-class="text-left"            
+              input-class="text-left"
               lazy-rules
               :rules="[(val) => (val && val.length > 0) || 'Valor Obrigatório']"
-            />
+            >
+              <template v-slot:prepend>
+                <q-icon name="title" />
+              </template>
+            </q-input>
 
             <q-input
-              filled
               v-model="valorDespesa"
               label="Valor"
               type="number"
@@ -86,52 +104,40 @@
               lazy-rules
               :rules="[(val) => (val && val.length > 0) || 'Valor Obrigatório']"
               clearable
-            />
+            >
+              <template v-slot:prepend>
+                <q-icon name="attach_money" />
+              </template>
+            </q-input>
 
+            <div class="q-pt-xs">
+            <label class="text-grey-8">Observação</label>
             <q-input
               filled
               v-model="formDespesa.observacao"
               type="textarea"
-              label="Observação"
-            />
+              hide-hint
+              class="q-pt-sm"             
+            >
+              <template v-slot:prepend>
+                <q-icon name="mode" />
+              </template>
+            </q-input>
+            </div>
 
-            <div class="text-right q-mt-md q-gutter-x-sm">
-              <q-btn
-                label="Fechar"
-                color="orange"
-                @click="closeDialog()"
-                flat
-                class="q-ma-xs"
-                dense
-                icon-right="close"
-              />
-              <q-btn
-                label="Deletar"
-                color="red-4"
-                @click="deleteDespesa()"
-                flat
-                class="q-ma-xs"
-                dense
-                icon-right="delete"
-              />
+            <div class="text-right q-mt-md">
+              <q-btn label="Fechar" color="orange" @click="closeDialog()" />              
               <q-btn
                 label="Salvar"
                 @click="onSubmit()"
                 color="teal"
-                flat
-                dense
                 class="q-ma-xs"
-                icon-right="save"
               />
             </div>
           </q-form>
         </q-card-section>
-
-        {{this.formDespesa}}
-
       </q-card>
     </q-dialog>
-    
   </div>
 </template>
 <style lang="sass">
@@ -150,27 +156,26 @@ div.q-dialog__inner.flex.no-pointer-events.q-dialog__inner--minimized.q-dialog__
 
 .q-btn__wrapper:before
   box-shadow:none!important
-
 </style>
 
-
 <script>
-import { Notify } from 'quasar'
-import { listaCategorias } from '../../dados/listaCategorias'
+import { Notify } from "quasar";
+import { listaCategorias } from "../../dados/listaCategorias";
 import inputDate from "../../components/input_date";
-import { mapActions } from 'vuex'
-import mixinUtils from '../../mixins/mixin-utils'
-const stringOptions =  listaCategorias.sort()
-import { date } from 'quasar'
+import { mapActions } from "vuex";
+import mixinUtils from "../../mixins/mixin-utils";
+const stringOptions = listaCategorias.sort();
+import { date } from "quasar";
+import conectFirebaseServices from "src/services/conectFirebaseServices"
 
 export default {
   mixins: [mixinUtils],
-   props: {  
+  props: {
     dados: {
       type: Object,
-      default: {}
-    }, 
-    dialogProp:"" 
+      default: {},
+    },
+    dialogProp: "",
   },
   components: {
     inputDate,
@@ -180,129 +185,102 @@ export default {
       dialog: false,
       maximizedToggle: true,
       isAdd: false,
+      date: '',
 
       formDespesa: {
         id: null,
-        data: '',        
-        categoria: '',
-        descricao: '',
-        valor: '',
-        observacao: '',
+        data: "",
+        categoria: "",
+        descricao: "",
+        valor: "",
+        observacao: "",
       },
-      valorDespesa:'',
+      valorDespesa: "",
       model: null,
-      stringOptions:'',
+      stringOptions: "",
       options: stringOptions,
-      dataEdit: ''
-    
+      dataEdit: "",
     };
   },
 
-  // beforeMount() {
-  //    setTimeout(() => {
-  //       moment.locale('pt-br');
-  //       let hj = moment().format('L')
-  //       this.setData(hj)
-  //    }, 500);
-  // }, 
-
-  computed: {},
-
-
 
   methods: {
-    ...mapActions('store', [
-      'getAllDespesas',
-      'addDespesaUserCategoria',
-      'updateDespesaUserCategoria',
-      'deleteDespesaUserCategoria'
-      ]),
-
+    ...mapActions("store", [
+      "getAllDespesas",
+      "addDespesaUserCategoria",
+      "updateDespesaUserCategoria",
+      "deleteDespesaUserCategoria",
+      "setDiaAtual",
+    ]),
 
     onSubmit() {
-            
-      if(this.isAdd){
-         this.addDespesaUserCategoria(this.formDespesa)
-         console.log('Cadastrar')
+      if (this.isAdd) {
+      //  this.addDespesaUserCategoria(this.formDespesa);
+        conectFirebaseServices.addDespesaUserCategoria(this.formDespesa)
+      }else {
+        conectFirebaseServices.updateDespesaUserCategoria(this.formDespesa)
+      }
 
-      }else{
-
-        this.updateDespesaUserCategoria(this.formDespesa)
-        console.log('Atualizar')
-      }     
-
-      this.onReset()
-      this.dialog = false
-      this.isAdd = false
-
-     this.mensagemSucesso('Dados salvos com sucesso!')
-    },
-
-    setData(value) {
-       this.formDespesa.data = value
-    },
-
-    setDataEdit(value){
-      this.dataEdit = ''
-      setTimeout(() => {  
-          let day = date.addToDate(value, { days: 1 })
-          day = date.formatDate(day, "YYYY-MM-DD")
-          this.dataEdit = day
-          this.setData(day)
-      }, 500);     
+      this.onReset();
+      this.dialog = false;
+      this.isAdd = false;
+      this.mensagemSucesso("Dados salvos com sucesso!");
     },
 
     deleteDespesa() {
-       this.$q.dialog({
-        title: 'Deletar Despesa',
-        message: 'Tem certeza que sejsa excluir a Despesa?',
-        persistent: true,
-        
-        cancel: true,
-        ok: {
-          label : 'Sim',
-          outlined: true,
+      this.$q
+        .dialog({
+          title: "Deletar Despesa",
+          message: "Tem certeza que sejsa excluir a Despesa?",
+          persistent: true,
+          cancel: true,
+
+          ok: {
+            label: "Sim",
+            outlined: true,
+          },
+          cancel: {
+            label: "Não",
+            push: false,
+          },
+        })
+        .onOk(() => {
+          //this.deleteDespesaUserCategoria(this.formDespesa);
+          console.log(this.formDespesa)
           
-        },
-        cancel: {
-          label : 'Não',
-          push: false
-          
-        },
-      }).onOk(() => {
-        this.deleteDespesaUserCategoria(this.formDespesa);
-        this.mensagemSucesso('Despesa deletada com sucesso!')
-        
-      }).onCancel(() => {
-        this.dialog = false
-        this.onReset()
-      }).onDismiss(() => {
-        this.dialog = false
-        this.onReset()
-      })
-     
+          let response = conectFirebaseServices.deleteDespesaUserCategoria(this.formDespesa.id)
+          console.log(response)
+
+          this.mensagemSucesso("Despesa deletada com sucesso!");
+        })
+        .onCancel(() => {
+          this.dialog = false;
+          this.onReset();
+        })
+        .onDismiss(() => {
+          this.dialog = false;
+          this.onReset();
+        });
     },
 
-    mensagemSucesso(value){
+    mensagemSucesso(value) {
       this.$q.notify({
         color: "green-4",
         textColor: "white",
-        type: 'positive',
+        type: "positive",
         icon: "cloud_done",
-        message: value
+        message: value,
       });
     },
 
-
     onReset() {
-      this.formDespesa = {}
-      this.valorDespesa = ''      
+      this.valorDespesa = "";
     },
 
     filterFn(val, update) {
       if (val === "") {
         update(() => {
-          this.options = stringOptions
+          this.options = stringOptions;
         });
         return;
       }
@@ -315,34 +293,45 @@ export default {
       });
     },
 
-    closeDialog(){
-     this.dialog = false
-    }
+    closeDialog() {
+      this.dialog = false;
+    },
 
+    setDataAtual(){
+      let timeStamp = Date.now()
+      this.date = date.formatDate(timeStamp, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
+      this.formDespesa.data = Number( date.formatDate(timeStamp, 'x'))
+    }
   },
 
-  watch:{
-    valorDespesa(value){
-      this.formDespesa.valor = Number(value)
+  watch: {
+    date(value){
+      this.formDespesa.data = Number(date.formatDate(value, 'x'))
+    },
+    valorDespesa(value) {
+      this.formDespesa.valor = Number(value);
     },
 
-    dados(value){    
-      console.log(value)   
-      this.formDespesa.id = value.id
-      this.formDespesa.categoria = value.categoria
-      this.formDespesa.descricao = value.descricao      
-      this.formDespesa.observacao = value.observacao ? value.observacao : ""
+    dados(value) {
+      this.formDespesa.id = value.id;
+      this.formDespesa.categoria = value.categoria;
+      this.formDespesa.descricao = value.descricao;
+      this.formDespesa.observacao = value.observacao ? value.observacao : "";
 
-      this.setDataEdit(value.data)
-      this.valorDespesa = value.valor
+    //  let dates = date.addToDate(value.data, { days: 1 })
+      this.date = date.formatDate(value.data, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
+      this.valorDespesa = value.valor;
       this.dialog = true;
+      this.isAdd = false;
     },
 
-    dialogProp(value){
+    dialogProp() {
       this.dialog = true;
-      this.isAdd = true
-      this.onReset()
-    }
-  }
+      this.isAdd = true;
+      this.formDespesa = {}
+      this.setDataAtual()
+
+    },
+  },
 };
 </script>

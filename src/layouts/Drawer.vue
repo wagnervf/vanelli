@@ -8,7 +8,7 @@
         </q-item-section>
 
         <q-item-section>
-          <q-item-label lines="1">Alan Roge</q-item-label>
+          <q-item-label lines="1">User</q-item-label>
           <q-item-label caption>February 22nd, 2019</q-item-label>
         </q-item-section>
 

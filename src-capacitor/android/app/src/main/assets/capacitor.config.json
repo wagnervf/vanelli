@@ -1,0 +1,10 @@
+{
+  "appId": "espacovanelli.com.br",
+  "appName": "Vanelli App",
+  "bundledWebRuntime": false,
+  "npmClient": "yarn",
+  "webDir": "www",
+  "server": {
+    "url": "http://192.168.15.4:8080"
+  }
+}

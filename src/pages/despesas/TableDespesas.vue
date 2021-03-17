@@ -1,6 +1,6 @@
 <template>
-  <div class="q-ma-none bg-white">
-    <div class="row full-width bg-red-4 text-white">
+  <div class="despesas">
+    <div class="row full-width bg-red-4 text-white q-py-sm header-despesas">
       <div class="col"></div>
       <div class="col-7 text-center q-pa-none">
         <q-btn
@@ -20,27 +20,28 @@
           </span>
         </q-btn>
       </div>
-      <div class="col text-right q-px-sm">
+      <div class="col text-right q-pr-sm">
         <q-btn
           flat
-          class="q-ma-none q-px-xs"
+          class="q-ma-none q-px-none"
           icon="search"
           @click="buscar = !buscar"
         />
+
         <q-btn
           flat
-          class="q-ma-none q-px-xs"
+          class="q-ma-none q-px-none"
           icon="filter_alt"
           @click="openFiltros()"
         />
       </div>
     </div>
 
-    <div class="full-width bg-white">
+    <!-- <div class="full-width bg-white">
       <h6 class="q-ma-none q-pr-xs text-right text-red-4 text-subtitle1">
         Total - {{ totalDespesas() }}
       </h6>
-    </div>
+    </div> -->
 
     <q-separator class="q-qy-none" />
 
@@ -61,7 +62,7 @@
       <q-table
         :data="itens"
         :columns="colunas"
-        row-key="id"
+        row-key="data"
         :filter="filter"
         separator="vertical"
         dense
@@ -76,96 +77,94 @@
       >
         <template v-slot:item="props">
           <div class="bg-white col-12" @click="editDespesa(props.row)">
-            <!-- <div class="row flex-inline">
-              <q-card-section class="q-py-none">
-                <p class="text-grey-7 text-subtitle2 q-ma-none">
-                {{ props.row.data | filterDiaDaSemana}}, {{ props.row.data | filterDiaDaSemanaNumero }}
-                </p>
-              </q-card-section>
-            </div> -->
+            <q-list separator>
+              <q-item class="q-pa-sm q-my-xs">
+                <q-item-section top avatar class="q-px-none">
+                  <q-avatar
+                    style="top: 15px;"
+                    size="md"
+                    color="red-5"
+                    text-color="white"
+                  >
+                    {{ props.row.user.nome | filterPrimeiraLetra }}
+                  </q-avatar>
+                </q-item-section>
 
-            <!-- <q-item class="q-pr-sm q-py-xs">
-              <q-item-section avatar class="q-px-none" style="min-width: 40px">
-                <q-avatar
-                  style="top: -15px;"
-                  size="md"
-                  color="red-10"
-                  text-color="white"
-                  >{{ props.row.user.name | filterPrimeiraLetra }}
-                </q-avatar>
-              </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-grey-7 text-caption q-ma-none">
+                    <!-- {{ props.row.data | filterDiaDaSemana }}, -->
+                    {{ props.row.data | filterDataFormatada }}
+                  </q-item-label>
+                  <q-item-label class="text-subtitle1">{{
+                    props.row.descricao
+                  }}</q-item-label>
+                  <q-item-label caption lines="3">{{
+                    props.row.categoria
+                  }}</q-item-label>
+                </q-item-section>
 
-              <q-item-section class="q-px-none">
-                <q-item-label>{{ props.row.descricao }}</q-item-label>
-                <q-item-label caption>{{ props.row.categoria }}</q-item-label>
-                <q-item-label side class="text-right"
-                  ><span class="text-subtitle2 text-red-10">
+                <q-item-section side bottom style="display: grid;">
+                  <span class="text-subtitle2 text-deep-orange-14">
                     {{ props.row.valor | filterMoedaFormatada }}
-                  </span></q-item-label
-                >
-              </q-item-section>
-            </q-item> -->
-
-            <q-item class="q-pa-sm q-my-xs">
-              <q-item-section top avatar class="q-px-none">
-                <q-avatar
-                style="top:15px"
-                size="md"
-                color="red-5"
-                text-color="white"
-                >
-                 {{ props.row.user.name | filterPrimeiraLetra }} 
-              </q-avatar>               
-              </q-item-section>
-
-              <q-item-section>
-                <q-item-label class="text-grey-7 text-caption q-ma-none">
-                  <!-- {{ props.row.data | filterDiaDaSemana }}, -->
-                  {{ props.row.data | filterDataFormatada }}
-                </q-item-label> 
-                <q-item-label class="text-subtitle1">{{ props.row.descricao }}</q-item-label>
-                <q-item-label caption lines="3">{{props.row.categoria}}</q-item-label>
-                
-              </q-item-section>
-
-              <q-item-section side bottom>
-                <span class="text-subtitle2 text-red-10">
-                  {{ props.row.valor | filterMoedaFormatada }}
-                </span>
-              </q-item-section>
-            </q-item>
+                  </span>
+                </q-item-section>
+              </q-item>
+              <q-separator color="grey-2" />
+            </q-list>
           </div>
         </template>
+         <template v-slot:bottom>
+           <div class="full-width bg-red-4" 
+            style="border-radius: 0px 0px 25px 25px;">
+        <h6 class="q-ma-none q-pr-md text-right text-white text-subtitle1">
+          Total  {{ totalDespesas() }}
+        </h6>
+      </div>
+         </template>
       </q-table>
+      
     </q-pull-to-refresh>
 
     <q-page-sticky position="bottom">
-      <div class="row justify-center bg-white full-width q-pa-sm">
+      <div class="row justify-center full-width q-pa-sm">
         <q-btn round color="red-8" icon="add" @click="adddDespesa()" />
       </div>
     </q-page-sticky>
 
     <Filtros
       :dialogFiltro="dialogFiltro"
-      v-on:data_inicio="setDateInicioFiltro($event)"
-      v-on:data_fim="setDateTerminoFiltro($event)"
       @ordernarPor="setOrdernarPor($event)"
-      @ordernarTipo="setOrdernarTipo($event)"
+      @buscarFiltrado="buscarFiltrado($event)"
     />
 
     <Form :dados="this.editedItem" :dialogProp="this.dialogAdd" />
 
     <Visualizar :dados="this.viewDados" />
-
-    <!-- <q-btn 
-    no-caps      
-    color="primary" 
-    label="Compartilhar" @click="show()" /> -->
   </div>
 </template>
 
-<style lang="sass">
+<style lang="stylus">
+.q-btn__wrapper{
+    padding: 4px
+}
+.q-table__bottom{
+    //top: -50px!important;
+    padding: 0px;
+    position: relative!important;
+  //  background: #d32f2f;
+    color: white;
+    }
+</style>
 
+<style lang="sass" scoped>
+.despesas
+  // margin: 10px;
+  padding-top: 0px;
+  background: white;
+  border-radius: 25px;
+
+.header-despesas
+  border-radius: 25px 25px 0px 0px;
 
 .q-table__bottom
   position: absolute;
@@ -175,10 +174,8 @@ div.q-table__middle.scroll > table > tbody > tr:nth-child(odd)
   background-color: #eee;
 
 div.col-12:nth-child(1)
-
-
 .q-table__grid-content >div.col-12:nth-last-child(1)
-  margin-bottom: 70px
+  margin-bottom: 50px
   position: relative
   border-bottom: 1px solid #eee
 
@@ -195,6 +192,7 @@ span.q-btn__wrapper.col.row.q-anchor--skip
     padding: 0px;
     border-radius: 5px 5px 0px 0px;
     color: #fff
+
 .input_buscar
   display: contents
   padding: 5px
@@ -216,6 +214,9 @@ div.q-table__top.relative-position.row.items-center > div:nth-child(1) > div > b
 .q-item__section--avatar
   min-height: 45px
   min-width: 45px
+.button.q-ma-none:nth-child(1) > span:nth-child(1)
+.button.q-ma-none:nth-child(1) > span:nth-child(2)
+  padding: 4px!important
 </style>
 
 <script>
@@ -227,6 +228,7 @@ import Visualizar from "./View";
 import { date } from "quasar";
 import moment from "moment";
 import mixinUtils from "../../mixins/mixin-utils";
+import { firebaseDb } from "src/boot/firebase.js";
 
 import { BottomSheet } from "quasar";
 
@@ -303,11 +305,17 @@ export default {
       filtro: {
         inicio: "",
         fim: "",
+        campo: "",
+        tipo: "",
       },
 
       tipoOrdenacao: true,
     };
   },
+
+  // created () {
+  //   this.$q.addressbarColor.set('#e57373')
+  // },
 
   beforeMount() {
     this.loading = true;
@@ -317,15 +325,7 @@ export default {
   },
 
   mounted() {
-    setTimeout(() => {
-      //this.setOrdernarPor("data")
-      let filtro = {
-        inicio: this.primeiroDiaMes(),
-        fim: this.ultimoDiaMes(),
-      };
-      this.getDespesas();
-      this.setInicioFimMesAtual(filtro);
-    }, 500);
+    this.getDespesas();
   },
 
   methods: {
@@ -333,53 +333,59 @@ export default {
 
     refresh(done) {
       setTimeout(() => {
-        this.getDespesas();
         done();
       }, 1000);
     },
 
     getDespesas() {
-      let filtro = {
-        inicio: this.primeiroDiaMes(),
-        fim: this.ultimoDiaMes(),
-      };
-      //  setTimeout(() => {
-      this.getAllDespesas(filtro);
-      // done()
-      // }, 1000)
+      this.filtro.inicio = Number(this.primeiroDiaMes());
+      this.filtro.fim = Number(this.ultimoDiaMes());
+      this.filtro.campo = "data";
+      this.filtro.tipo = "asc";
+
+      firebaseDb
+        .collection("despesas_categoria_user")
+        .orderBy(this.filtro.campo, this.filtro.tipo)
+        .startAt(this.filtro.inicio)
+        .endAt(this.filtro.fim)
+        .onSnapshot((snapshot) => {
+          snapshot.docChanges().forEach((change) => {
+            let itenAlterado = change.doc.data();
+            itenAlterado.id = change.doc.id;
+
+            if (change.type === "added") {
+              this.itens.unshift(itenAlterado);
+            }
+            if (change.type === "modified") {
+              let index = this.itens.findIndex(
+                (item) => item.id === itenAlterado.id
+              );
+              Object.assign(this.itens[index], itenAlterado);
+            }
+            if (change.type === "removed") {
+              let index = this.itens.findIndex(
+                (item) => item.id === itenAlterado.id
+              );
+              this.itens.splice(index, 1);
+            }
+          });
+        });
     },
 
     adddDespesa() {
       this.dialogAdd = Object.assign({}, true);
     },
 
-    // viewDespesa(value) {
-    //   //sempre cria um novo valor e atribui para viewDados que fica escutando (watch) no componente Visualizar
-    //   this.viewDados = Object.assign({}, value);
-    //   for (const key in value) {
-    //     if (value.hasOwnProperty(key)) {
-    //       const element = value[key];
-
-    //       if (element === "user") {
-    //         this.viewDados = {
-    //           user: element,
-    //           dados: value,
-    //         };
-    //       }
-    //     }
-    //   }
-    // },
-
     editDespesa(item) {
-      this.editedIndex = this.listaDeDespesas.indexOf(item);
+      this.editedIndex = this.itens.indexOf(item);
       this.editedItem = Object.assign({}, item);
     },
 
     totalDespesas() {
       let value = 0;
 
-      if (typeof this.listaDeDespesas != "undefined") {
-        this.listaDeDespesas.forEach((val) => {
+      if (typeof this.itens != "undefined") {
+        this.itens.forEach((val) => {
           value = value + val.valor;
         });
       }
@@ -387,137 +393,71 @@ export default {
       return this.formatarReal(value);
     },
 
+    openFiltros() {
+      //Envia um objeto vazio apenas para o watch ouvir e atualizar lá no Filtros.vue
+      this.dialogFiltro = Object.assign({}, true);
+    },
+
+    setDateInicioFiltro(value) {
+      this.filtro.inicio = value;
+    },
+
+    setDateTerminoFiltro(value) {
+      this.filtro.fim = value;
+    },
+
+    buscarFiltrado(filtro) {
+      console.log(filtro);
+      this.itens = [];
+      firebaseDb
+        .collection("despesas_categoria_user")
+        .where("data", ">=", filtro.inicio)
+        .where("data", "<=", filtro.fim)
+        //.orderBy(filtro.campo, filtro.tipo)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            console.log(doc.id, " => ", doc.data());
+            this.itens.unshift(doc.data());
+            this.itens = this.customSort(this.itens, filtro.campo, filtro.tipo);
+          });
+        });
+    },
+
+    setOrdernarPor(value) {
+      let lista =  this.itens
+      this.itens = this.customSort(lista, value.campo, value.tipo)
+    },
+
+
     customSort(rows, sortBy, tipoOrdenacao) {
-      const data = [...rows];
+      console.log(rows, sortBy, tipoOrdenacao)
+      //const data = [...rows];
+      const data = rows;
       var descending = tipoOrdenacao;
 
       data.sort((a, b) => {
         const x = descending ? b : a;
         const y = descending ? a : b;
 
-        if (sortBy === "data" || "descricao" || "categoria") {
+      if (sortBy === "descricao" || "categoria") {
           let xa = x[sortBy];
           let ya = y[sortBy];
-          return xa > ya ? 1 : xa < ya ? -1 : 0;
-        } else {
-          // numeric sort
-          return x[sortBy] - y[sortBy];
-        }
+        return xa > ya ? 1 : xa < ya ? -1 : 0;
+      } 
+
+      if (sortBy === "data" || "valor")  {
+        return x[sortBy] - y[sortBy];
+       }
       });
-
       return data;
-    },
-
-    openFiltros() {
-      //Envia um objeto vazio apenas para o watch ouvir e atualizar lá no Filtros.vue
-      this.dialogFiltro = Object.assign({}, true);
-    },
-
-    // setDateInicioFiltro(value) {
-    //  this.filtro.inicio = value
-    // },
-
-    // setDateTerminoFiltro(value) {
-    //   this.filtro.fim = value
-    // },
-
-    setOrdernarPor(value) {
-      this.itens = this.customSort(this.itens, value, this.tipoOrdenacao);
-    },
-
-    setOrdernarTipo(value) {
-      this.tipoOrdenacao = value;
-    },
-
-    // groupByItensData(value) {
-    //   let info = []
-    //   let xs = value
-    //   let key = 'data'
-    //   info = xs.reduce((rv, x) => {
-    //     (rv[x[key]] = rv[x[key]] || []).push(x);
-    //     return rv;
-    //   }, {})
-    //   return y
-    // },
-
-    show(grid) {
-      this.$q
-        .bottomSheet({
-          message: "Bottom Sheet message",
-          grid,
-          actions: [
-            {
-              label: "Drive",
-              img: "https://cdn.quasar.dev/img/logo_drive_128px.png",
-              id: "drive",
-            },
-            {
-              label: "Keep",
-              img: "https://cdn.quasar.dev/img/logo_keep_128px.png",
-              id: "keep",
-            },
-            {
-              label: "Google Hangouts",
-              img: "https://cdn.quasar.dev/img/logo_hangouts_128px.png",
-              id: "calendar",
-            },
-            {
-              label: "Calendar",
-              img: "https://cdn.quasar.dev/img/logo_calendar_128px.png",
-              id: "calendar",
-            },
-            {},
-            {
-              label: "Share",
-              icon: "share",
-              id: "share",
-            },
-            {
-              label: "Upload",
-              icon: "cloud_upload",
-              color: "primary",
-              id: "upload",
-            },
-            {},
-            {
-              label: "John",
-              avatar: "https://cdn.quasar.dev/img/boy-avatar.png",
-              id: "john",
-            },
-          ],
-        })
-        .onOk((action) => {
-          // console.log('Action chosen:', action.id)
-        })
-        .onCancel(() => {
-          // console.log('Dismissed')
-        })
-        .onDismiss(() => {
-          // console.log('I am triggered on both OK and Cancel')
-        });
-    },
+    }
   },
 
   computed: {
     ...mapGetters("store", ["allDespesas", "dataSetadaNoFiltro", "mesAtual"]),
-
-    listaDeDespesas() {
-      let dados_obj = this.allDespesas;
-      let dados_array = [];
-
-      dados_array.push(Object.values(dados_obj));
-      let value = dados_array[0];
-
-      //ao receber a listagem do Vuex, preenche e ordena os itens
-      this.itens = this.customSort(dados_array[0], "data", this.tipoOrdenacao);
-
-      return dados_array[0];
-    },
-
     pagesNumber() {
-      return Math.ceil(
-        this.listaDeDespesas.length / this.pagination.rowsPerPage
-      );
+      return Math.ceil(this.itens.length / this.pagination.rowsPerPage);
     },
 
     datasDoFiltroAtual() {
@@ -526,9 +466,6 @@ export default {
   },
 
   watch: {
-    // ordernarPor(value) {
-    //   this.itens = this.customSort(this.itens, value);
-    // },
   },
 };
 </script>

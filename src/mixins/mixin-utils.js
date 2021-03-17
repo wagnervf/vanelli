@@ -178,12 +178,12 @@ export default {
     primeiroDiaMes () {
       moment.locale('pt-br');
       var begin = moment().format("YYYY-MM-01");
-      return begin
+      return date.formatDate(begin, 'x')
     },
 
     ultimoDiaMes () {
       var end = moment().format("YYYY-MM-") + moment().daysInMonth();
-      return end
+      return date.formatDate(end, 'x')
     },
 
     minutoAtual () {
@@ -223,13 +223,20 @@ export default {
     },
 
     filterDiaDaSemana (value) {
-      return moment(value).format('dddd').replace('-feira', '')
+      let nome = moment(value).format('dddd').replace('-feira', '')
+      nome = nome[0].toUpperCase() + nome.substr(1);
+      let data = moment(value).format('DD/MM/YYYY')
+      return nome + ', ' + data
     },
 
     filterDiaDaSemanaNumero (value) {
       return moment(value).format('DD/MM');
     },
 
+    filterNomeDiaSemana (value) {
+      return moment(value).format('LL')
+
+    },
 
 
     filterMoedaFormatada (value) {

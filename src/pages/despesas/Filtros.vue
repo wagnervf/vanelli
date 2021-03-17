@@ -1,7 +1,6 @@
 <template>
   <q-dialog
     v-model="dialog"
-    persistent
     transition-show="slide-up"
     transition-hide="slide-down"
     full-width
@@ -58,6 +57,7 @@
             </template>
           </q-select>
         </div>
+
         <div class="q-ma-xs" v-if="ordenarToggle">
           <q-select
             dense
@@ -69,7 +69,6 @@
             label-color="primary"
             hide-hint
             use-chips
-            color="primary"
           >
             <template v-slot:prepend>
               <q-icon name="swap_vert" />
@@ -119,8 +118,6 @@
             <template v-slot:prepend>
               <q-icon name="event" class="cursor-pointer"></q-icon>
             </template>
-
-            
           </q-datetime-picker>
         </div>
 
@@ -136,14 +133,15 @@
               <q-icon name="event" class="cursor-pointer"></q-icon>
             </template>
           </q-datetime-picker>
-        </div> </q-card-section
+        </div> 
+        </q-card-section
       ><!-- Filtrar por Data -->
 
       <q-card-actions class="row full-width q-pa-md">
         <div class="row fit justify-end text-right">
           <q-btn
             label="Limpar Filtros"
-            @click="cancelar()"
+            @click="limparFiltros()"
             color="red-10"
             icon-right="restart_alt"
             flat
@@ -154,6 +152,7 @@
           <q-btn @click="submitFiltro()" color="teal" icon="check" round />
         </div>
       </q-card-actions>
+
     </q-card>
   </q-dialog>
 </template>
@@ -213,57 +212,58 @@ export default {
       filtro: {
         inicio: "",
         fim: "",
+        campo:"",
+        tipo:""
       },
       filtrarPorPeriodo: false,
       ordenarToggle: true,
       limpouFiltro: false,
     };
   },
-
   mounted() {
-    setTimeout(() => {
-      // this.ordernarPor = "data";
-      // this.setDateInicioFiltro(this.primeiroDiaMes())
-      //this.setDateTerminoFiltro(this.ultimoDiaMes())
-      //  let filtro = {
-      //   inicio: this.primeiroDiaMes(),
-      //   fim: this.ultimoDiaMes()
-      //  // dataFim: "2021-04-31",
-      //   //dataInicio: "2021-04-01"
-      // }
-      // this.getDespesas(filtros)
-    }, 500);
+   this.inicio = moment().format("YYYY-MM-01")
+   this.fim = moment().format("YYYY-MM-") + moment().daysInMonth();
+
+    this.filtro.inicio = Number(this.primeiroDiaMes() )
+    this.filtro.fim = Number(this.ultimoDiaMes() )
+    this.filtro.campo = 'data'
+    this.filtro.tipo = false
   },
 
   methods: {
-    ...mapActions("store", ["getAllDespesas", "setDataFiltrada"]),
+    ...mapActions("store", ["getAllDespesas", "setDataFiltrada", "getFiltradas"]),
 
-    cancelar() {
+    setInicioFim(){
+
+    },
+
+    limparFiltros() {
       this.ordernarPor = "data";
       this.ordernarTipo = true;
-      this.inicio = this.inicioMesStore;
-      this.fim = this.fimMesStore;
       this.filtrarPorPeriodo = false;
       this.limpouFiltro = true;
       this.setDataFiltrada(this.filtro = {})
     },
 
     submitFiltro() {
-      this.dialog = false;
-      //console.log(this.filtro)
+      this.dialog = false;     
 
-      //Store Actions
-      if (this.filtrarPorPeriodo || this.limpouFiltro) {
-        //Actions Store
-       // this.setDataFiltrada(this.filtro)
-        this.getAllDespesas(this.filtro);
+      this.filtro.inicio = Number(date.formatDate(this.inicio, 'x'))
+      this.filtro.fim = Number(date.formatDate(this.fim, 'x'))
+      this.filtro.campo = this.ordernarPor
+      this.filtro.tipo  = this.ordernarTipo
+
+      this.$emit("ordernarPor", this.filtro);
+
+      if (this.filtrarPorPeriodo){
+        this.filtro.tipo = this.ordernarTipo ? 'desc' : 'asc'
+        this.filtro.campo = this.ordernarPor
+        this.setDataFiltrada(this.filtro)
+        
+        this.$emit("ordernarPor", this.filtro);
+        this.$emit("buscarFiltrado", this.filtro);
       }
-
-       if (this.filtrarPorPeriodo){
-          this.setDataFiltrada(this.filtro)
-       }
-
-      this.limpouFiltro = false;
+   //   this.limpouFiltro = false;
     },
   },
 
@@ -276,47 +276,36 @@ export default {
     fimMesStore() {
       return this.mesAtual.fim;
     },
-
-    // datas(){
-
-    //   return this.mesAtual
-
-    //   //Recebe as datas atuais
-    // //  this.setData(this.mesAtual.inicio)
-    //  // this.setData(this.mesAtual.fim)
-
-    //   //console.log(this.filtro.fim)
-    // }
   },
 
   watch: {
     dialogFiltro(value) {
       this.dialog = true;
-      this.inicio = this.mesAtual.inicio;
-      this.fim = this.mesAtual.fim;
     },
 
     inicio(value) {
-      this.filtro.inicio = this.formatarDataMoment(value);
+      this.filtro.inicio = Number(date.formatDate(value, 'x'))
     },
 
     fim(value) {
-      this.filtro.fim = this.formatarDataMoment(value);
-      this.end = this.formatarData(value);
+      this.filtro.fim = Number(date.formatDate(value, 'x'))
+    //  this.end = this.formatarData(value);
     },
 
     ordernarPor(value) {
-      this.$emit("ordernarPor", value);
-    },
-    ordernarTipo(value) {
-      this.$emit("ordernarTipo", value);
+      let f = {
+        'campo' : value,
+        'tipo' : this.ordernarTipo
+      }
+     
+      this.$emit("ordernarPor", Object.assign({}, f));
     },
   },
 };
 </script>
 
 
-<style lang="sass">
+<style lang="sass" scoped>
 div.q-field__native.row > span
     vertical-align: middle;
     border-radius: 16px;
